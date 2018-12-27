@@ -1,0 +1,48 @@
+﻿<UserControl x:Class="ArcOthello_AC.Game"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:ArcOthello_AC"
+             xmlns:diag="clr-namespace:System.Diagnostics;assembly=WindowsBase"
+             mc:Ignorable="d" 
+             HorizontalAlignment ="Stretch"
+             HorizontalContentAlignment ="Stretch"
+             VerticalAlignment ="Stretch"
+             VerticalContentAlignment ="Stretch"
+             Width="{Binding RelativeSource={RelativeSource Self}, Path=ActualHeight}"
+             Background="#FF00FF0C"
+             Foreground="White">
+
+    <UserControl.Resources>
+        <local:DatabindingDebugConverter x:Key="debugConverter" />
+
+        <DataTemplate x:Key ="CellTemplate">
+            <Border x:Name ="Border" BorderBrush ="DimGray" BorderThickness ="1">
+                <TextBlock HorizontalAlignment ="Center" VerticalAlignment ="Center" FontWeight ="Bold" FontSize ="16" Text ="x"/>
+            </Border>
+        </DataTemplate>
+
+        <DataTemplate x:Key ="OuterRowTemplate">
+            <ItemsControl ItemsSource ="{Binding}" ItemTemplate ="{StaticResource CellTemplate}">
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <UniformGrid Columns="1"/>
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+            </ItemsControl>
+        </DataTemplate>
+
+    </UserControl.Resources>
+
+    <Grid>
+        <ItemsControl ItemsSource="{Binding Pieces}" x:Name="PieceList" ItemTemplate ="{StaticResource OuterRowTemplate}">
+            <ItemsControl.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <UniformGrid Rows="1"/>
+                </ItemsPanelTemplate>
+            </ItemsControl.ItemsPanel>
+        </ItemsControl>
+    </Grid>
+    
+</UserControl>

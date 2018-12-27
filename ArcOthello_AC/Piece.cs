@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Drawing;
 using System.Linq;
 using System.Text;
@@ -8,21 +9,44 @@ using System.Windows;
 
 namespace ArcOthello_AC
 {
-    class Piece
+    public class Piece : INotifyPropertyChanged
     {
 
-        private Team team;
-        public Point Position { get; }
+        public int X { get; private set; }
+        public int Y { get; private set; }
 
-        public Piece(Team team, Point position)
+        private Team team;
+
+        public Team Team
         {
-            this.team = team;
-            this.Position = position;
+            get { return team; }
+            set {
+                team = value;
+                RaisePropertyChanged("team");
+            }
+        }
+
+
+        public Piece(Team team, int x, int y)
+        {
+            Team = team;
+            this.X = x;
+            this.Y = y;
         }
 
         private void Flip()
         {
-            team = team == Team.Black ? Team.White : Team.Black;
+            Team = Team == Team.Black ? Team.White : Team.Black;
         }
+
+        #region PropertyChanged implementation
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        void RaisePropertyChanged(string propertyName)
+        {
+            if (PropertyChanged != null)
+                PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
+        }
+        #endregion
     }
 }

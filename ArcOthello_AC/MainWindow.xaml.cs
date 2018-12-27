@@ -22,6 +22,7 @@ namespace ArcOthello_AC
     public partial class MainWindow : Window, INotifyPropertyChanged
     {
 
+        #region Properties
         private int scoreP1;
 
         public int ScoreP1
@@ -45,22 +46,33 @@ namespace ArcOthello_AC
             }
         }
 
-        void RaisePropertyChanged(string propertyName)
-        {
-            if (PropertyChanged != null)
-                PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
-        }
-
-       
+        public Game GameInstance { get; set; }
+        #endregion
 
         public MainWindow()
         {
             InitializeComponent();
             DataContext = this;
-            ScoreP1 = 5;
-            ScoreP2 = 3;
+            Init();
+            
         }
 
+        private void Init()
+        {
+            GameInstance = new Game();
+        }
+
+
+
+        #region PropertyChanged implementation
         public event PropertyChangedEventHandler PropertyChanged;
+
+        void RaisePropertyChanged(string propertyName)
+        {
+            if (PropertyChanged != null)
+                PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
+        }
+        #endregion
     }
+
 }

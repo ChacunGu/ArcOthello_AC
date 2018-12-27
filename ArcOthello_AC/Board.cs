@@ -1,33 +1,79 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Drawing;
+using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace ArcOthello_AC
 {
-    class Board
+    public class Board : INotifyPropertyChanged
     {
+        #region Properties
+        public int GridWidth { get; private set; }
+        public int GridHeight { get; private set; }
 
-        private Size size;
-        private Piece[,] content; // ObservableCollection ?
+        private ObservableCollection<ObservableCollection<Piece>> pieces;
 
-        public Board(Size size)
+        public ObservableCollection<ObservableCollection<Piece>> Pieces
         {
-            this.size = size;
+            get { return pieces; }
+        }
+        #endregion
+
+        #region Indexer
+        public Piece this[int row, int col]
+        {
+            get
+            {
+                if (row < 0 || row >= GridHeight)
+                    throw new ArgumentOutOfRangeException("row", row, "Invalid Row Index");
+                if (col < 0 || col >= GridWidth)
+                    throw new ArgumentOutOfRangeException("col", col, "Invalid Column Index");
+                return pieces[row][col];
+            }
+        }
+        #endregion
+
+
+        public Board(int width, int height)
+        {
+            this.GridWidth = width;
+            this.GridHeight = height;
             this.Init();
         }
 
         public void Init()
         {
-            content = new Piece[size.Width, size.Height];
-            
+            pieces = new ObservableCollection<ObservableCollection<Piece>>();
+            for (int i = 0; i < GridHeight; i++)
+            {
+                ObservableCollection<Piece> col = new ObservableCollection<Piece>();
+                for (int j = 0; j < GridWidth; j++)
+                {
+                    Piece p = new Piece(Team.None, i, j);
+                    //c.PropertyChanged += new PropertyChangedEventHandler(c_PropertyChanged);
+                    col.Add(p);
+                }
+                pieces.Add(col);
+            }
+
         }
 
-        public void PosePiece(Piece piece)
+        public void PosePiece(int row, int col, Team team)
         {
-            content[piece.Position.X, piece.Position.Y] = piece;
+
         }
+
+        #region PropertyChanged implementation
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        void RaisePropertyChanged(string propertyName)
+        {
+            if (PropertyChanged != null)
+                PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
+        }
+        #endregion
     }
 }

@@ -6,10 +6,9 @@ using System.Threading.Tasks;
 
 namespace ArcOthello_AC
 {
-    public enum Team
+    static class Constants
     {
-        None,
-        White,
-        Black
+        public static readonly int GRID_WIDTH = 9;
+        public static readonly int GRID_HEIGHT = 7;
     }
 }
