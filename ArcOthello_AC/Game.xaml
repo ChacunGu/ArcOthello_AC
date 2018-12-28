@@ -15,11 +15,14 @@
              Foreground="White">
 
     <UserControl.Resources>
+        <BitmapImage UriSource="/Images/nvidia.png" x:Key="BlackImage" />
+        <BitmapImage UriSource="/Images/amd.png" x:Key="WhiteImage" />
+        <local:TeamToImageConverter BlackImage="{StaticResource BlackImage }" WhiteImage="{StaticResource WhiteImage}" x:Key="TeamToImageConverter"/>
         <local:DatabindingDebugConverter x:Key="debugConverter" />
 
         <DataTemplate x:Key ="CellTemplate">
             <Border x:Name ="Border" BorderBrush ="DimGray" BorderThickness ="1">
-                <TextBlock HorizontalAlignment ="Center" VerticalAlignment ="Center" FontWeight ="Bold" FontSize ="16" Text ="x"/>
+                <Image Source="{Binding Team, Converter={StaticResource TeamToImageConverter}, diag:PresentationTraceSources.TraceLevel=High}" />
             </Border>
         </DataTemplate>
 

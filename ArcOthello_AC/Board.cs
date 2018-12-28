@@ -52,7 +52,7 @@ namespace ArcOthello_AC
                 ObservableCollection<Piece> col = new ObservableCollection<Piece>();
                 for (int j = 0; j < GridWidth; j++)
                 {
-                    Piece p = new Piece(Team.None, i, j);
+                    Piece p = new Piece(Team.Black, i, j);
                     //c.PropertyChanged += new PropertyChangedEventHandler(c_PropertyChanged);
                     col.Add(p);
                 }
