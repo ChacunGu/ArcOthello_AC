@@ -29,27 +29,11 @@
             </Grid.ColumnDefinitions>
             <Grid.RowDefinitions>
                 <RowDefinition Height="*"/>
-                <RowDefinition Height="4*"/>
                 <RowDefinition Height="20px"/>
             </Grid.RowDefinitions>
-            <Grid Grid.Column="1">
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="15*"/>
-                    <RowDefinition Height="45*"/>
-                    <RowDefinition Height="20*"/>
-                    <RowDefinition Height="15*"/>
-                </Grid.RowDefinitions>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="177*"/>
-                    <ColumnDefinition Width="100"/>
-                    <ColumnDefinition Width="177*"/>
-                </Grid.ColumnDefinitions>
-                <Label Content="Player 1" Grid.Row="1" FontSize="24" HorizontalAlignment="Right" Width="93" />
-                <Label Content="{Binding ScoreP1}" Grid.Row="1" Grid.Column="1" FontSize="24" />
-                <Label Content="Player 2" Grid.Row="1" Grid.Column="2" FontSize="24" HorizontalAlignment="Left" Width="93" />
-            </Grid>
+            
 
-            <Grid Grid.Column="1" Grid.Row="1" Name="BoardGrid">
+            <Grid Grid.Column="1" Name="BoardGrid" MinWidth="300" MinHeight="300">
                 <local:Game />
             </Grid>
         </Grid>

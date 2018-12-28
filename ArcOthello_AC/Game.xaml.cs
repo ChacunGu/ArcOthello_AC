@@ -20,22 +20,23 @@ namespace ArcOthello_AC
     /// </summary>
     public partial class Game : UserControl
     {
-        
+        private Player Player1 = new Player(Team.Black);
+        private Player Player2 = new Player(Team.White);
 
-        private Player player1;
-        private Player player2;
         private Board board = new Board(Constants.GRID_WIDTH, Constants.GRID_HEIGHT);
 
         public Game()
         {
             InitializeComponent();
             PieceList.DataContext = board;
+            ScoreP1.DataContext = Player1;
+            ScoreP2.DataContext = Player2;
             Init();
         }
 
         private void Init()
         {
-
+            
         }
 
         private void Restart()

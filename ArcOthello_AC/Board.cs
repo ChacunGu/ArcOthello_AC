@@ -47,17 +47,21 @@ namespace ArcOthello_AC
         public void Init()
         {
             pieces = new ObservableCollection<ObservableCollection<Piece>>();
-            for (int i = 0; i < GridHeight; i++)
+            for (int i = 0; i < GridWidth; i++)
             {
                 ObservableCollection<Piece> col = new ObservableCollection<Piece>();
-                for (int j = 0; j < GridWidth; j++)
+                for (int j = 0; j < GridHeight; j++)
                 {
-                    Piece p = new Piece(Team.Black, i, j);
+                    Piece p = new Piece(Team.None, i, j);
                     //c.PropertyChanged += new PropertyChangedEventHandler(c_PropertyChanged);
                     col.Add(p);
                 }
                 pieces.Add(col);
             }
+            pieces[3][2].SetTeam(Team.White);
+            pieces[3][3].SetTeam(Team.Black);
+            pieces[4][2].SetTeam(Team.Black);
+            pieces[4][3].SetTeam(Team.White);
 
         }
 

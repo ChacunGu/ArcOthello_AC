@@ -10,9 +10,7 @@
              HorizontalContentAlignment ="Stretch"
              VerticalAlignment ="Stretch"
              VerticalContentAlignment ="Stretch"
-             Width="{Binding RelativeSource={RelativeSource Self}, Path=ActualHeight}"
-             Background="#FF00FF0C"
-             Foreground="White">
+             Width="{Binding RelativeSource={RelativeSource Self}, Path=ActualHeight}">
 
     <UserControl.Resources>
         <BitmapImage UriSource="/Images/nvidia.png" x:Key="BlackImage" />
@@ -22,7 +20,7 @@
 
         <DataTemplate x:Key ="CellTemplate">
             <Border x:Name ="Border" BorderBrush ="DimGray" BorderThickness ="1">
-                <Image Source="{Binding Team, Converter={StaticResource TeamToImageConverter}, diag:PresentationTraceSources.TraceLevel=High}" />
+                <Image Source="{Binding Team, Converter={StaticResource TeamToImageConverter}}" />
             </Border>
         </DataTemplate>
 
@@ -39,7 +37,36 @@
     </UserControl.Resources>
 
     <Grid>
-        <ItemsControl ItemsSource="{Binding Pieces}" x:Name="PieceList" ItemTemplate ="{StaticResource OuterRowTemplate}">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="100px"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="15*"/>
+                <RowDefinition Height="45*"/>
+                <RowDefinition Height="20*"/>
+                <RowDefinition Height="15*"/>
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="177*"/>
+                <ColumnDefinition Width="50"/>
+                <ColumnDefinition Width="15px"/>    
+                <ColumnDefinition Width="50"/>
+                <ColumnDefinition Width="177*"/>
+            </Grid.ColumnDefinitions>
+            <Label Content="Player 1" Grid.Row="1" FontSize="24" HorizontalAlignment="Right" Width="93" />
+            <Label x:Name="ScoreP1" Content="{Binding Score}" Grid.Row="1" Grid.Column="1" FontSize="24" HorizontalAlignment="Right"  />
+            <Label Content=":" Grid.Row="1" Grid.Column="2" FontSize="24" HorizontalAlignment="Center" VerticalAlignment="Center" />
+            <Label x:Name="ScoreP2" Content="{Binding Score}" Grid.Row="1" Grid.Column="3" FontSize="24" HorizontalAlignment="Left" />
+            <Label Content="Player 2" Grid.Row="1" Grid.Column="4" FontSize="24" HorizontalAlignment="Left" Width="93" />
+        </Grid>
+
+
+        <ItemsControl ItemsSource="{Binding Pieces}" x:Name="PieceList" ItemTemplate ="{StaticResource OuterRowTemplate}" Grid.Row="1" 
+             Background="#FF00FF0C"
+             Foreground="White">
             <ItemsControl.ItemsPanel>
                 <ItemsPanelTemplate>
                     <UniformGrid Rows="1"/>
@@ -47,5 +74,5 @@
             </ItemsControl.ItemsPanel>
         </ItemsControl>
     </Grid>
-    
+
 </UserControl>

@@ -39,6 +39,11 @@ namespace ArcOthello_AC
             Team = Team == Team.Black ? Team.White : Team.Black;
         }
 
+        public void SetTeam(Team team)
+        {
+            this.Team = team;
+        }
+
         #region PropertyChanged implementation
         public event PropertyChangedEventHandler PropertyChanged;
 
