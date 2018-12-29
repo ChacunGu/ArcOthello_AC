@@ -15,7 +15,9 @@
     <UserControl.Resources>
         <BitmapImage UriSource="/Images/nvidia.png" x:Key="BlackImage" />
         <BitmapImage UriSource="/Images/amd.png" x:Key="WhiteImage" />
-        <local:TeamToImageConverter BlackImage="{StaticResource BlackImage }" WhiteImage="{StaticResource WhiteImage}" x:Key="TeamToImageConverter"/>
+        <BitmapImage UriSource="/Images/nvidia-preview.png" x:Key="BlackImagePreview" />
+        <BitmapImage UriSource="/Images/amd-preview.png" x:Key="WhiteImagePreview" />
+        <local:TeamToImageConverter BlackImage="{StaticResource BlackImage }" WhiteImage="{StaticResource WhiteImage}" BlackImagePreview="{StaticResource BlackImagePreview }" WhiteImagePreview="{StaticResource WhiteImagePreview}" x:Key="TeamToImageConverter"/>
         <local:DatabindingDebugConverter x:Key="debugConverter" />
 
         <DataTemplate x:Key ="CellTemplate" >

@@ -40,6 +40,7 @@ namespace ArcOthello_AC
         private void Init()
         {
             CurrentPlayer = Player1;
+            ShowPossibleMove();
         }
 
         private void Restart()
@@ -69,13 +70,37 @@ namespace ArcOthello_AC
             int x = (int)(p.X / i.ActualWidth * board.GridWidth);
             int y = (int)(p.Y / i.ActualHeight * board.GridHeight);
             if (board.PosePiece(y, x, CurrentPlayer.Team))
-                NextPlayer();
+                EndTurn();
         }
 
         private void NextPlayer()
         {
             CurrentPlayer = CurrentPlayer == Player1 ? Player2 : Player1;
+        }
+
+        private void EndTurn()
+        {
+            ClearPreview();
             RecalculateScore();
+            NextPlayer();
+            ShowPossibleMove();
+        }
+
+        private void ClearPreview()
+        {
+            foreach (ObservableCollection<Piece> row in board.Pieces)
+            {
+                foreach (Piece p in row)
+                {
+                    if (IsPreview(p))
+                        p.Team = Team.None;
+                }
+            }
+        }
+
+        private bool IsPreview(Piece p)
+        {
+            return p.Team == Team.BlackPreview || p.Team == Team.WhitePreview;
         }
 
         private void RecalculateScore()
@@ -92,6 +117,11 @@ namespace ArcOthello_AC
                         Player2.Score++;
                 }
             }
+        }
+
+        private void ShowPossibleMove()
+        {
+            board.ShowPossibleMove(CurrentPlayer.Team);
         }
     }
 }

@@ -66,16 +66,11 @@ namespace ArcOthello_AC
 
         public bool PosePiece(int row, int col, Team team)
         {
-            if (pieces[col][row].Team == Team.None)
+            if (!IsOccupied(row, col))
             {
                 pieces[col][row].SetTeam(team);
 
-                FlipPiece(row, col, team, 1, 0).ForEach(p => p.Flip());
-                FlipPiece(row, col, team, -1, 0).ForEach(p => p.Flip());
-                FlipPiece(row, col, team, 1, 1).ForEach(p => p.Flip());
-                FlipPiece(row, col, team, -1, -1).ForEach(p => p.Flip());
-                FlipPiece(row, col, team, 0, 1).ForEach(p => p.Flip());
-                FlipPiece(row, col, team, 0, -1).ForEach(p => p.Flip());
+                GetFlipPieceList(row, col, team).ForEach(p => p.Flip());
 
                 return true;
             }
@@ -83,27 +78,72 @@ namespace ArcOthello_AC
             return false;
         }
 
-        private List<Piece> FlipPiece(int row, int col, Team team, int incX, int incY)
+        private bool IsOccupied(int row, int col)
+        {
+            return pieces[col][row].Team == Team.Black || pieces[col][row].Team == Team.White;
+        }
+
+        public void ShowPossibleMove(Team team)
+        {
+            Team preview = team == Team.Black ? Team.BlackPreview : Team.WhitePreview;
+            for (int i = 0; i < GridWidth; i++)
+            {
+                for (int j = 0; j < GridHeight; j++)
+                {
+                    if (GetFlipPieceList(j, i, team).Count() != 0)
+                        pieces[i][j].Team = preview;
+
+                }
+            }
+        }
+
+        private List<Piece> GetFlipPieceList(int row, int col, Team team)
+        {
+            return GetFlipPieceList(row, col, team, 1, 0)
+                .Concat(GetFlipPieceList(row, col, team, -1, 0))
+                .Concat(GetFlipPieceList(row, col, team, 1, 1))
+                .Concat(GetFlipPieceList(row, col, team, -1, -1))
+                .Concat(GetFlipPieceList(row, col, team, -1, 1))
+                .Concat(GetFlipPieceList(row, col, team, 1, -1))
+                .Concat(GetFlipPieceList(row, col, team, 0, 1))
+                .Concat(GetFlipPieceList(row, col, team, 0, -1)).ToList();
+        }
+
+        private List<Piece> GetFlipPieceList(int row, int col, Team team, int incX, int incY)
         {
             List<Piece> flipPiece = new List<Piece>();
-            try
+
+            Team enemyTeam = team == Team.Black ? Team.White : Team.Black;
+
+            row += incY;
+            col += incX;
+
+            while (IsValid(col, row) && pieces[col][row].Team == enemyTeam)
             {
+                if (!IsValid(col, row))
+                    return new List<Piece>();
+
+                flipPiece.Add(pieces[col][row]);
                 row += incY;
                 col += incX;
-
-                while (pieces[col][row].Team != team)
-                {
-                    if (pieces[col][row].Team == Team.None)
-                        throw new ArgumentOutOfRangeException();
-                    flipPiece.Add(pieces[col][row]);
-                    row += incY;
-                    col += incX;
-                }
-                return flipPiece;
-            } catch (ArgumentOutOfRangeException)
-            {
-                return new List<Piece>();
             }
+
+            if (!IsValid(col, row))
+                return new List<Piece>();
+
+            return flipPiece;
+        }
+
+        private bool IsValid(int col, int row)
+        {
+            if (col < 0 || col >= GridWidth)
+                return false;
+            if (row < 0 || row >= GridHeight)
+                return false;
+            if (pieces[col][row].Team == Team.None || pieces[col][row].Team == Team.BlackPreview || pieces[col][row].Team == Team.WhitePreview)
+                return false;
+
+            return true;
         }
 
         #region PropertyChanged implementation

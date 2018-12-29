@@ -10,6 +10,8 @@ namespace ArcOthello_AC
     {
         None,
         White,
-        Black
+        Black,
+        WhitePreview,
+        BlackPreview
     }
 }

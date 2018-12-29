@@ -13,6 +13,8 @@ namespace ArcOthello_AC
     {
         public BitmapImage WhiteImage { get; set; }
         public BitmapImage BlackImage { get; set; }
+        public BitmapImage WhiteImagePreview { get; set; }
+        public BitmapImage BlackImagePreview { get; set; }
 
         public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
         {
@@ -28,6 +30,10 @@ namespace ArcOthello_AC
                     return BlackImage;
                 case Team.White:
                     return WhiteImage;
+                case Team.BlackPreview:
+                    return BlackImagePreview;
+                case Team.WhitePreview:
+                    return WhiteImagePreview;
                 default:
                     return null;
             }
