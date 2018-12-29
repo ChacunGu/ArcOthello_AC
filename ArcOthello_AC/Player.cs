@@ -18,16 +18,16 @@ namespace ArcOthello_AC
             get { return score; }
             set {
                 score = value;
-                RaisePropertyChanged("team");
+                RaisePropertyChanged("Score");
             }
         }
 
 
-        private Team team;
+        public Team Team { get; private set; }
 
         public Player(Team team)
         {
-            this.team = team;
+            this.Team = team;
             this.Score = 0;
         }
 

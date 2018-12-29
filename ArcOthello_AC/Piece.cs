@@ -34,7 +34,7 @@ namespace ArcOthello_AC
             this.Y = y;
         }
 
-        private void Flip()
+        public void Flip()
         {
             Team = Team == Team.Black ? Team.White : Team.Black;
         }

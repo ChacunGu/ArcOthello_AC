@@ -18,8 +18,8 @@
         <local:TeamToImageConverter BlackImage="{StaticResource BlackImage }" WhiteImage="{StaticResource WhiteImage}" x:Key="TeamToImageConverter"/>
         <local:DatabindingDebugConverter x:Key="debugConverter" />
 
-        <DataTemplate x:Key ="CellTemplate">
-            <Border x:Name ="Border" BorderBrush ="DimGray" BorderThickness ="1">
+        <DataTemplate x:Key ="CellTemplate" >
+            <Border x:Name ="Border" BorderBrush ="DimGray" BorderThickness ="1" >
                 <Image Source="{Binding Team, Converter={StaticResource TeamToImageConverter}}" />
             </Border>
         </DataTemplate>
@@ -64,9 +64,7 @@
         </Grid>
 
 
-        <ItemsControl ItemsSource="{Binding Pieces}" x:Name="PieceList" ItemTemplate ="{StaticResource OuterRowTemplate}" Grid.Row="1" 
-             Background="#FF00FF0C"
-             Foreground="White">
+        <ItemsControl ItemsSource="{Binding Pieces}" x:Name="PieceList" ItemTemplate ="{StaticResource OuterRowTemplate}" Grid.Row="1" Background="#FF00FF0C" Foreground="White" MouseDown="Board_Click">
             <ItemsControl.ItemsPanel>
                 <ItemsPanelTemplate>
                     <UniformGrid Rows="1"/>

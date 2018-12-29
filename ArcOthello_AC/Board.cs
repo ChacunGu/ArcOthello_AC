@@ -53,7 +53,6 @@ namespace ArcOthello_AC
                 for (int j = 0; j < GridHeight; j++)
                 {
                     Piece p = new Piece(Team.None, i, j);
-                    //c.PropertyChanged += new PropertyChangedEventHandler(c_PropertyChanged);
                     col.Add(p);
                 }
                 pieces.Add(col);
@@ -65,9 +64,46 @@ namespace ArcOthello_AC
 
         }
 
-        public void PosePiece(int row, int col, Team team)
+        public bool PosePiece(int row, int col, Team team)
         {
+            if (pieces[col][row].Team == Team.None)
+            {
+                pieces[col][row].SetTeam(team);
 
+                FlipPiece(row, col, team, 1, 0).ForEach(p => p.Flip());
+                FlipPiece(row, col, team, -1, 0).ForEach(p => p.Flip());
+                FlipPiece(row, col, team, 1, 1).ForEach(p => p.Flip());
+                FlipPiece(row, col, team, -1, -1).ForEach(p => p.Flip());
+                FlipPiece(row, col, team, 0, 1).ForEach(p => p.Flip());
+                FlipPiece(row, col, team, 0, -1).ForEach(p => p.Flip());
+
+                return true;
+            }
+
+            return false;
+        }
+
+        private List<Piece> FlipPiece(int row, int col, Team team, int incX, int incY)
+        {
+            List<Piece> flipPiece = new List<Piece>();
+            try
+            {
+                row += incY;
+                col += incX;
+
+                while (pieces[col][row].Team != team)
+                {
+                    if (pieces[col][row].Team == Team.None)
+                        throw new ArgumentOutOfRangeException();
+                    flipPiece.Add(pieces[col][row]);
+                    row += incY;
+                    col += incX;
+                }
+                return flipPiece;
+            } catch (ArgumentOutOfRangeException)
+            {
+                return new List<Piece>();
+            }
         }
 
         #region PropertyChanged implementation
