@@ -31,7 +31,7 @@ namespace ArcOthello_AC
                     throw new ArgumentOutOfRangeException("row", row, "Invalid Row Index");
                 if (col < 0 || col >= GridWidth)
                     throw new ArgumentOutOfRangeException("col", col, "Invalid Column Index");
-                return pieces[row][col];
+                return pieces[col][row];
             }
         }
         #endregion
@@ -47,12 +47,12 @@ namespace ArcOthello_AC
         public void Init()
         {
             pieces = new ObservableCollection<ObservableCollection<Piece>>();
-            for (int i = 0; i < GridWidth; i++)
+            for (int x = 0; x < GridWidth; x++)
             {
                 ObservableCollection<Piece> col = new ObservableCollection<Piece>();
-                for (int j = 0; j < GridHeight; j++)
+                for (int y = 0; y < GridHeight; y++)
                 {
-                    Piece p = new Piece(Team.None, i, j);
+                    Piece p = new Piece(Team.None, x, y);
                     col.Add(p);
                 }
                 pieces.Add(col);
@@ -61,7 +61,6 @@ namespace ArcOthello_AC
             pieces[3][3].SetTeam(Team.Black);
             pieces[4][2].SetTeam(Team.Black);
             pieces[4][3].SetTeam(Team.White);
-
         }
 
         public bool PosePiece(int row, int col, Team team)
@@ -86,13 +85,12 @@ namespace ArcOthello_AC
         public void ShowPossibleMove(Team team)
         {
             Team preview = team == Team.Black ? Team.BlackPreview : Team.WhitePreview;
-            for (int i = 0; i < GridWidth; i++)
+            for (int y = 0; y < GridHeight; y++)
             {
-                for (int j = 0; j < GridHeight; j++)
+                for (int x = 0; x < GridWidth; x++)
                 {
-                    if (GetFlipPieceList(j, i, team).Count() != 0)
-                        pieces[i][j].Team = preview;
-
+                    if (GetFlipPieceList(y, x, team).Count() != 0 && pieces[x][y].Team == Team.None)
+                        pieces[x][y].Team = preview;
                 }
             }
         }
@@ -118,23 +116,19 @@ namespace ArcOthello_AC
             row += incY;
             col += incX;
 
-            while (IsValid(col, row) && pieces[col][row].Team == enemyTeam)
+            while (IsValid(row, col) && pieces[col][row].Team == enemyTeam)
             {
-                if (!IsValid(col, row))
-                    return new List<Piece>();
-
                 flipPiece.Add(pieces[col][row]);
                 row += incY;
                 col += incX;
             }
 
-            if (!IsValid(col, row))
-                return new List<Piece>();
-
-            return flipPiece;
+            if (IsValid(row, col) && pieces[col][row].Team == team)
+                return flipPiece;
+            return new List<Piece>();
         }
 
-        private bool IsValid(int col, int row)
+        public bool IsValid(int row, int col)
         {
             if (col < 0 || col >= GridWidth)
                 return false;
@@ -144,6 +138,13 @@ namespace ArcOthello_AC
                 return false;
 
             return true;
+        }
+
+        public bool IsValid(int row, int col, Team team)
+        {
+            return col >= 0 && col < GridWidth && 
+                   row >= 0 && row < GridHeight && 
+                   pieces[col][row].Team == (team == Team.White ? Team.WhitePreview : Team.BlackPreview);
         }
 
         #region PropertyChanged implementation
