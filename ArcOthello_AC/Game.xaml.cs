@@ -2,7 +2,10 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
+using System.Runtime.Serialization;
+using System.Runtime.Serialization.Formatters.Binary;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -23,8 +26,8 @@ namespace ArcOthello_AC
     /// </summary>
     public partial class Game : UserControl, IPlayable.IPlayable
     {
-        private Player Player1 = new Player(Team.Black);
-        private Player Player2 = new Player(Team.White);
+        private Player player1 = new Player(Team.Black);
+        private Player player2 = new Player(Team.White);
 
         private Board board = new Board(Constants.GRID_WIDTH, Constants.GRID_HEIGHT);
         
@@ -48,21 +51,27 @@ namespace ArcOthello_AC
         public Game()
         {
             InitializeComponent();
-            PieceList.DataContext = board;
-            ScoreP1.DataContext = Player1;
-            ScoreP2.DataContext = Player2;
-            TimeP1.DataContext = Player1;
-            TimeP2.DataContext = Player2;
-            
+
+            ResetDataContext();
+
             dispatcherTimer.Tick += new EventHandler(DispatcherTimer_Tick);
             dispatcherTimer.Interval = new TimeSpan(0, 0, 0, 0, 20);
 
             Init();
         }
 
+        private void ResetDataContext()
+        {
+            PieceList.DataContext = board;
+            ScoreP1.DataContext = player1;
+            ScoreP2.DataContext = player2;
+            TimeP1.DataContext = player1;
+            TimeP2.DataContext = player2;
+        }
+
         private void Init()
         {
-            CurrentPlayer = Player1;
+            CurrentPlayer = player1;
             ShowPossibleMove();
 
             dispatcherTimer.Start();
@@ -76,14 +85,39 @@ namespace ArcOthello_AC
 
         }
 
-        private void Save()
+        public void Save(string path)
         {
-
+            SerializeToXML(path);
         }
 
-        private void Load()
+        public void Load(string path)
         {
+            DeserializeFromXML(path);
+        }
 
+        private void SerializeToXML(string path)
+        {
+            IFormatter formatter = new BinaryFormatter();
+            using (FileStream stream = new FileStream(path, FileMode.Create, FileAccess.Write, FileShare.None))
+            {
+                formatter.Serialize(stream, player1);
+                formatter.Serialize(stream, player2);
+                formatter.Serialize(stream, CurrentPlayer.Team == Team.Black ? true : false);
+                formatter.Serialize(stream, board);
+            }
+        }
+        private void DeserializeFromXML(string path)
+        {
+            IFormatter formatter = new BinaryFormatter();
+            using (FileStream stream = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.None))
+            {
+
+                player1 = (Player)formatter.Deserialize(stream);
+                player2 = (Player)formatter.Deserialize(stream);
+                CurrentPlayer = (bool)formatter.Deserialize(stream) == true ? player1 : player2;
+                board = (Board)formatter.Deserialize(stream);
+                ResetDataContext();
+            }
         }
         #endregion
 
@@ -100,7 +134,7 @@ namespace ArcOthello_AC
 
         private void NextPlayer()
         {
-            CurrentPlayer = CurrentPlayer == Player1 ? Player2 : Player1;
+            CurrentPlayer = CurrentPlayer == player1 ? player2 : player1;
         }
 
         private void EndTurn()
@@ -130,16 +164,16 @@ namespace ArcOthello_AC
 
         private void RecalculateScore()
         {
-            Player1.Score = 0;
-            Player2.Score = 0;
+            player1.Score = 0;
+            player2.Score = 0;
             foreach(ObservableCollection<Piece> row in board.Pieces)
             {
                 foreach(Piece p in row)
                 {
-                    if (p.Team == Player1.Team)
-                        Player1.Score++;
-                    else if (p.Team == Player2.Team)
-                        Player2.Score++;
+                    if (p.Team == player1.Team)
+                        player1.Score++;
+                    else if (p.Team == player2.Team)
+                        player2.Score++;
                 }
             }
         }
@@ -236,7 +270,7 @@ namespace ArcOthello_AC
         /// <returns>white player's score</returns>
         public int GetWhiteScore()
         {
-            return Player1.Score;
+            return player1.Score;
         }
 
         /// <summary>
@@ -245,7 +279,7 @@ namespace ArcOthello_AC
         /// <returns>black player's score</returns>
         public int GetBlackScore()
         {
-            return Player2.Score;
+            return player2.Score;
         }
         #endregion
     }

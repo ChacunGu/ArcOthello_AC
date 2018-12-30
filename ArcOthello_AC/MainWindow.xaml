@@ -6,6 +6,14 @@
         xmlns:local="clr-namespace:ArcOthello_AC"
         mc:Ignorable="d"
         Title="MainWindow" MinWidth="800" MinHeight="600">
+
+    <Window.CommandBindings>
+        <CommandBinding Command="New" CanExecute="NewCommand_CanExecute" Executed="NewCommand_Executed" />
+        <CommandBinding Command="Save" CanExecute="SaveCommand_CanExecute" Executed="SaveCommand_Executed" />
+        <CommandBinding Command="SaveAs" CanExecute="SaveAsCommand_CanExecute" Executed="SaveAsCommand_Executed" />
+        <CommandBinding Command="Open" CanExecute="OpenCommand_CanExecute" Executed="OpenCommand_Executed" />
+    </Window.CommandBindings>
+    
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="20px"/>
@@ -13,10 +21,10 @@
         </Grid.RowDefinitions>
         <Menu >
             <MenuItem Header="_File">
-                <MenuItem Header="_New" />
-                <MenuItem Header="_Save" />
-                <MenuItem Header="Save _As" />
-                <MenuItem Header="_Load" />
+                <MenuItem Header="_New" Command="New" />
+                <MenuItem Header="_Save" Command="Save"/>
+                <MenuItem Header="Save _As" Command="SaveAs" />
+                <MenuItem Header="_Load" Command="Open" />
                 <Separator />
                 <MenuItem Header="_Exit" />
             </MenuItem>
@@ -34,7 +42,7 @@
             
 
             <Grid Grid.Column="1" Name="BoardGrid" MinWidth="300" MinHeight="300">
-                <local:Game />
+                <local:Game x:Name="GameInstance" />
             </Grid>
         </Grid>
 

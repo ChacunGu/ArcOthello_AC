@@ -9,6 +9,7 @@ using System.Windows;
 
 namespace ArcOthello_AC
 {
+    [Serializable]
     public class Player : INotifyPropertyChanged
     {
         private int score;
@@ -54,6 +55,7 @@ namespace ArcOthello_AC
         }
 
         #region PropertyChanged implementation
+        [field: NonSerializedAttribute()]
         public event PropertyChangedEventHandler PropertyChanged;
 
         void RaisePropertyChanged(string propertyName)

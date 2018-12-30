@@ -46,7 +46,7 @@ namespace ArcOthello_AC
             }
         }
 
-        public Game GameInstance { get; set; }
+        string filename;
         #endregion
 
         public MainWindow()
@@ -59,10 +59,79 @@ namespace ArcOthello_AC
 
         private void Init()
         {
-            GameInstance = new Game();
         }
 
+        private void NewCommand_CanExecute(object sender, CanExecuteRoutedEventArgs e)
+        {
+            e.CanExecute = true;
+        }
 
+        private void NewCommand_Executed(object sender, ExecutedRoutedEventArgs e)
+        {
+            // TODO create a new game
+        }
+
+        private void SaveCommand_CanExecute(object sender, CanExecuteRoutedEventArgs e)
+        {
+            e.CanExecute = filename != null;
+        }
+
+        private void SaveCommand_Executed(object sender, ExecutedRoutedEventArgs e)
+        {
+            GameInstance.Save(filename);
+        }
+
+        private void SaveAsCommand_CanExecute(object sender, CanExecuteRoutedEventArgs e)
+        {
+            e.CanExecute = true;
+        }
+
+        private void SaveAsCommand_Executed(object sender, ExecutedRoutedEventArgs e)
+        {
+            Microsoft.Win32.SaveFileDialog dlg = new Microsoft.Win32.SaveFileDialog
+            {
+                FileName = "Save", // Default file name
+                DefaultExt = ".oth", // Default file extension
+                Filter = "Othello Save files (.oth)|*.oth" // Filter files by extension
+            };
+
+            // Show save file dialog box
+            Nullable<bool> result = dlg.ShowDialog();
+
+            // Process save file dialog box results
+            if (result == true)
+            {
+                // Save document
+                filename = dlg.FileName;
+                GameInstance.Save(filename);
+            }
+        }
+        
+        private void OpenCommand_CanExecute(object sender, CanExecuteRoutedEventArgs e)
+        {
+            e.CanExecute = true;
+        }
+
+        private void OpenCommand_Executed(object sender, ExecutedRoutedEventArgs e)
+        {
+            Microsoft.Win32.OpenFileDialog dlg = new Microsoft.Win32.OpenFileDialog
+            {
+                FileName = "Save", // Default file name
+                DefaultExt = ".oth", // Default file extension
+                Filter = "Othello Save files (.oth)|*.oth" // Filter files by extension
+            };
+
+            // Show save file dialog box
+            Nullable<bool> result = dlg.ShowDialog();
+
+            // Process save file dialog box results
+            if (result == true)
+            {
+                // Save document
+                filename = dlg.FileName;
+                GameInstance.Load(filename);
+            }
+        }
 
         #region PropertyChanged implementation
         public event PropertyChangedEventHandler PropertyChanged;
@@ -72,7 +141,10 @@ namespace ArcOthello_AC
             if (PropertyChanged != null)
                 PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
         }
+
         #endregion
+
+        
     }
 
 }

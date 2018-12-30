@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 
 namespace ArcOthello_AC
 {
+    [Serializable]
     public class Board : INotifyPropertyChanged
     {
         #region Properties
@@ -35,7 +36,6 @@ namespace ArcOthello_AC
             }
         }
         #endregion
-
 
         public Board(int width, int height)
         {
@@ -148,6 +148,7 @@ namespace ArcOthello_AC
         }
 
         #region PropertyChanged implementation
+        [field: NonSerializedAttribute()]
         public event PropertyChangedEventHandler PropertyChanged;
 
         void RaisePropertyChanged(string propertyName)
