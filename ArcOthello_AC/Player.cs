@@ -22,13 +22,25 @@ namespace ArcOthello_AC
             }
         }
 
-
         public Team Team { get; private set; }
+
+        private TimeSpan time;
+
+        public TimeSpan Time
+        {
+            get { return time; }
+            set {
+                time = value;
+                RaisePropertyChanged("Time");
+            }
+        }
+        
 
         public Player(Team team)
         {
             this.Team = team;
             this.Score = 0;
+            this.Time = new TimeSpan();
         }
 
         //public void UpdateScore(int newScore)

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -13,6 +14,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using System.Windows.Threading;
 
 namespace ArcOthello_AC
 {
@@ -28,12 +30,33 @@ namespace ArcOthello_AC
         
         private Player CurrentPlayer;
 
+        #region Timer
+
+        Stopwatch stopWatch = new Stopwatch();
+
+        DispatcherTimer dispatcherTimer = new DispatcherTimer();
+
+        private void DispatcherTimer_Tick(object sender, EventArgs e)
+        {
+            CurrentPlayer.Time = CurrentPlayer.Time.Add(stopWatch.Elapsed);
+            stopWatch.Restart();
+        }
+
+        #endregion
+
+
         public Game()
         {
             InitializeComponent();
             PieceList.DataContext = board;
             ScoreP1.DataContext = Player1;
             ScoreP2.DataContext = Player2;
+            TimeP1.DataContext = Player1;
+            TimeP2.DataContext = Player2;
+            
+            dispatcherTimer.Tick += new EventHandler(DispatcherTimer_Tick);
+            dispatcherTimer.Interval = new TimeSpan(0, 0, 0, 0, 20);
+
             Init();
         }
 
@@ -41,8 +64,13 @@ namespace ArcOthello_AC
         {
             CurrentPlayer = Player1;
             ShowPossibleMove();
+
+            dispatcherTimer.Start();
+            stopWatch.Start();
         }
 
+
+        #region Game Saver
         private void Restart()
         {
 
@@ -57,12 +85,9 @@ namespace ArcOthello_AC
         {
 
         }
+        #endregion
 
-        private void Border_MouseDown(object sender, MouseButtonEventArgs e)
-        {
-            Console.WriteLine(sender);
-        }
-
+        #region Game Logic
         private void Board_Click(object sender, MouseButtonEventArgs e)
         {
             ItemsControl i = sender as ItemsControl;
@@ -123,7 +148,9 @@ namespace ArcOthello_AC
         {
             board.ShowPossibleMove(CurrentPlayer.Team);
         }
+        #endregion
 
+        #region IPlayable Implementation
         /// <summary>
         /// Returns the IA's name
         /// </summary>
@@ -220,5 +247,6 @@ namespace ArcOthello_AC
         {
             return Player2.Score;
         }
+        #endregion
     }
 }

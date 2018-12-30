@@ -65,7 +65,7 @@ namespace ArcOthello_AC
 
         public bool PosePiece(int row, int col, Team team)
         {
-            if (!IsOccupied(row, col))
+            if (IsPositionValid(row, col))
             {
                 pieces[col][row].SetTeam(team);
 
@@ -77,9 +77,9 @@ namespace ArcOthello_AC
             return false;
         }
 
-        private bool IsOccupied(int row, int col)
+        private bool IsPositionValid(int row, int col)
         {
-            return pieces[col][row].Team == Team.Black || pieces[col][row].Team == Team.White;
+            return pieces[col][row].Team == Team.BlackPreview || pieces[col][row].Team == Team.WhitePreview;
         }
 
         public void ShowPossibleMove(Team team)
