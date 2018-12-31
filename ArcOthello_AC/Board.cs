@@ -95,6 +95,20 @@ namespace ArcOthello_AC
             }
         }
 
+        public int NumberPossibleMove(Team team)
+        {
+            int count = 0;
+            Team preview = team == Team.Black ? Team.BlackPreview : Team.WhitePreview;
+            for (int y = 0; y < GridHeight; y++)
+            {
+                for (int x = 0; x < GridWidth; x++)
+                {
+                    count += GetFlipPieceList(y, x, team).Count() != 0 && pieces[x][y].Team == Team.None ? 1 : 0;
+                }
+            }
+            return count;
+        }
+
         private List<Piece> GetFlipPieceList(int row, int col, Team team)
         {
             return GetFlipPieceList(row, col, team, 1, 0)

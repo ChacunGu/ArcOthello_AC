@@ -34,7 +34,6 @@
                 </ItemsControl.ItemsPanel>
             </ItemsControl>
         </DataTemplate>
-
     </UserControl.Resources>
 
     <Grid>
@@ -53,7 +52,7 @@
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="177*"/>
                 <ColumnDefinition Width="50"/>
-                <ColumnDefinition Width="15px"/>    
+                <ColumnDefinition Width="15px"/>
                 <ColumnDefinition Width="50"/>
                 <ColumnDefinition Width="177*"/>
             </Grid.ColumnDefinitions>
@@ -100,6 +99,22 @@
                 </ItemsPanelTemplate>
             </ItemsControl.ItemsPanel>
         </ItemsControl>
+
+        <Popup Name="PopupMenu" IsOpen="False" Loaded="PopupMenu_Loaded">
+            <StackPanel Name="PopupMenu_content" Width="200" Height="200">
+                <TextBlock Name="PopupMenu_Title" ></TextBlock>
+                <Button Content="Start a new game" Click="NewGame" />
+                <!--<Button Content="Load a save" Click="Load" />-->
+                <Button Content="Exit" Click="Exit" />
+            </StackPanel>
+        </Popup>
+
+        <Popup Name="PopupEndGame" IsOpen="False" Loaded="PopupEndGame_Loaded">
+            <StackPanel Name="PopupEndGame_content" Width="200" Height="200">
+                <TextBlock Name="PopupEndGame_WinnerName" Background="LightGreen" ></TextBlock>
+                <Button Content="Go back to menu" Click="GoBackToMenu" />
+            </StackPanel>
+        </Popup>
     </Grid>
 
 </UserControl>

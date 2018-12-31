@@ -26,12 +26,14 @@ namespace ArcOthello_AC
     /// </summary>
     public partial class Game : UserControl, IPlayable.IPlayable
     {
-        private Player player1 = new Player(Team.Black);
-        private Player player2 = new Player(Team.White);
+        private Player player1;
+        private Player player2;
 
-        private Board board = new Board(Constants.GRID_WIDTH, Constants.GRID_HEIGHT);
+        private Board board;
         
         private Player CurrentPlayer;
+        private bool isGameOn = false;
+        private bool playerPassed = false;
 
         #region Timer
 
@@ -47,17 +49,42 @@ namespace ArcOthello_AC
 
         #endregion
 
+        #region GUI events
+        private void NewGame(object sender, RoutedEventArgs e)
+        {
+            PopupMenu.IsOpen = false;
+
+            Init();
+        }
+
+        private void GoBackToMenu(object sender, RoutedEventArgs e)
+        {
+            PopupEndGame.IsOpen = false;
+            PopupMenu.IsOpen = true;
+        }
+
+        private void Exit(object sender, RoutedEventArgs e)
+        {
+            System.Windows.Application.Current.Shutdown();
+        }
+
+        private void PopupMenu_Loaded(object sender, RoutedEventArgs e)
+        {
+            PopupMenu.HorizontalOffset = (ActualWidth - PopupMenu_content.Width) / 2;
+            PopupMenu.VerticalOffset = ActualHeight / 2;
+        }
+        private void PopupEndGame_Loaded(object sender, RoutedEventArgs e)
+        {
+            PopupEndGame.HorizontalOffset = (ActualWidth - PopupEndGame_content.Width) / 2;
+            PopupEndGame.VerticalOffset = ActualHeight / 2;
+        }
+        #endregion
+
 
         public Game()
         {
             InitializeComponent();
-
-            ResetDataContext();
-
-            dispatcherTimer.Tick += new EventHandler(DispatcherTimer_Tick);
-            dispatcherTimer.Interval = new TimeSpan(0, 0, 0, 0, 20);
-
-            Init();
+            PopupMenu.IsOpen = true;
         }
 
         private void ResetDataContext()
@@ -71,7 +98,19 @@ namespace ArcOthello_AC
 
         private void Init()
         {
+            player1 = new Player(Team.White);
+            player2 = new Player(Team.Black);
             CurrentPlayer = player1;
+            board = new Board(Constants.GRID_WIDTH, Constants.GRID_HEIGHT);
+
+            ResetDataContext();
+
+            dispatcherTimer.Tick += new EventHandler(DispatcherTimer_Tick);
+            dispatcherTimer.Interval = new TimeSpan(0, 0, 0, 0, 20);
+
+            isGameOn = true;
+            playerPassed = false;
+
             ShowPossibleMove();
 
             dispatcherTimer.Start();
@@ -80,11 +119,6 @@ namespace ArcOthello_AC
 
 
         #region Game Saver
-        private void Restart()
-        {
-
-        }
-
         public void Save(string path)
         {
             SerializeToXML(path);
@@ -106,6 +140,7 @@ namespace ArcOthello_AC
                 formatter.Serialize(stream, board);
             }
         }
+
         private void DeserializeFromXML(string path)
         {
             IFormatter formatter = new BinaryFormatter();
@@ -121,15 +156,19 @@ namespace ArcOthello_AC
         }
         #endregion
 
+
         #region Game Logic
         private void Board_Click(object sender, MouseButtonEventArgs e)
         {
-            ItemsControl i = sender as ItemsControl;
-            Point p = e.GetPosition(i);
-            int x = (int)(p.X / i.ActualWidth * board.GridWidth);
-            int y = (int)(p.Y / i.ActualHeight * board.GridHeight);
-            if (board.PosePiece(y, x, CurrentPlayer.Team))
-                EndTurn();
+            if (isGameOn)
+            {
+                ItemsControl i = sender as ItemsControl;
+                Point p = e.GetPosition(i);
+                int x = (int)(p.X / i.ActualWidth * board.GridWidth);
+                int y = (int)(p.Y / i.ActualHeight * board.GridHeight);
+                if (board.PosePiece(y, x, CurrentPlayer.Team))
+                    EndTurn();
+            }
         }
 
         private void NextPlayer()
@@ -142,7 +181,36 @@ namespace ArcOthello_AC
             ClearPreview();
             RecalculateScore();
             NextPlayer();
-            ShowPossibleMove();
+
+            if (CanCurrentPlayerPlay())
+            {
+                playerPassed = false;
+                ShowPossibleMove();
+            }
+            else
+            {
+                if (playerPassed)
+                    EndGame();
+                else
+                {
+                    playerPassed = true;
+                    EndTurn();
+                }
+            }
+        }
+
+        private bool CanCurrentPlayerPlay()
+        {
+            return board.NumberPossibleMove(CurrentPlayer.Team) > 0;
+        }
+
+        private void EndGame()
+        {
+            isGameOn = false;
+            PopupEndGame.IsOpen = true;
+            PopupEndGame_WinnerName.Text = (player1.Score > player2.Score ?  "White wins the game" : 
+                                            player1.Score == player2.Score ? "Draw !" :
+                                                                             "Black wins the game");
         }
 
         private void ClearPreview()
@@ -184,6 +252,7 @@ namespace ArcOthello_AC
         }
         #endregion
 
+
         #region IPlayable Implementation
         /// <summary>
         /// Returns the IA's name
@@ -191,7 +260,7 @@ namespace ArcOthello_AC
         /// <returns>IA's name</returns>
         public string GetName()
         {
-            return "trouver_un_nom_pour_l_IA";
+            return "Jack";
         }
 
         /// <summary>
