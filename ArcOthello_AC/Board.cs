@@ -16,14 +16,14 @@ namespace ArcOthello_AC
         public int GridHeight { get; private set; }
 
         private ObservableCollection<ObservableCollection<Piece>> pieces;
+        #endregion
 
+        #region Indexer
         public ObservableCollection<ObservableCollection<Piece>> Pieces
         {
             get { return pieces; }
         }
-        #endregion
 
-        #region Indexer
         public Piece this[int row, int col]
         {
             get
@@ -44,6 +44,13 @@ namespace ArcOthello_AC
             this.Init();
         }
 
+        public Board(Board b)
+        {
+            this.GridWidth = b.GridWidth;
+            this.GridHeight = b.GridHeight;
+            Init(b.pieces);
+        }
+
         public void Init()
         {
             pieces = new ObservableCollection<ObservableCollection<Piece>>();
@@ -61,6 +68,21 @@ namespace ArcOthello_AC
             pieces[3][3].SetTeam(Team.Black);
             pieces[4][2].SetTeam(Team.Black);
             pieces[4][3].SetTeam(Team.White);
+        }
+
+        public void Init(ObservableCollection<ObservableCollection<Piece>> piecesToCopy)
+        {
+            pieces = new ObservableCollection<ObservableCollection<Piece>>();
+            for (int x = 0; x < GridWidth; x++)
+            {
+                ObservableCollection<Piece> col = new ObservableCollection<Piece>();
+                for (int y = 0; y < GridHeight; y++)
+                {
+                    Piece p = new Piece(piecesToCopy[x][y]);
+                    col.Add(p);
+                }
+                pieces.Add(col);
+            }
         }
 
         public bool PosePiece(int row, int col, Team team)

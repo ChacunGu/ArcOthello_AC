@@ -34,9 +34,9 @@ namespace ArcOthello_AC
         private Player CurrentPlayer;
         private bool isGameOn = false;
         private bool playerPassed = false;
+        private Stack<Board> history;
 
         #region Timer
-
         Stopwatch stopWatch = new Stopwatch();
 
         DispatcherTimer dispatcherTimer = new DispatcherTimer();
@@ -46,8 +46,8 @@ namespace ArcOthello_AC
             CurrentPlayer.Time = CurrentPlayer.Time.Add(stopWatch.Elapsed);
             stopWatch.Restart();
         }
-
         #endregion
+
 
         #region GUI events
         private void NewGame(object sender, RoutedEventArgs e)
@@ -98,6 +98,7 @@ namespace ArcOthello_AC
 
         private void Init()
         {
+            history = new Stack<Board>();
             player1 = new Player(Team.White);
             player2 = new Player(Team.Black);
             CurrentPlayer = player1;
@@ -115,6 +116,13 @@ namespace ArcOthello_AC
 
             dispatcherTimer.Start();
             stopWatch.Start();
+        }
+
+        private void Undo()
+        {
+            board = history.Pop();
+            NextPlayer();
+            // TODO timers ? interface
         }
 
 
@@ -166,7 +174,7 @@ namespace ArcOthello_AC
                 Point p = e.GetPosition(i);
                 int x = (int)(p.X / i.ActualWidth * board.GridWidth);
                 int y = (int)(p.Y / i.ActualHeight * board.GridHeight);
-                if (board.PosePiece(y, x, CurrentPlayer.Team))
+                if (PlayMove(x, y, CurrentPlayer.Team == Team.White))
                     EndTurn();
             }
         }
@@ -251,7 +259,7 @@ namespace ArcOthello_AC
             board.ShowPossibleMove(CurrentPlayer.Team);
         }
         #endregion
-
+        
 
         #region IPlayable Implementation
         /// <summary>
@@ -280,12 +288,14 @@ namespace ArcOthello_AC
         /// Will return false otherwise (board is unchanged)
         /// </summary>
         /// <param name="column">value between 0 and 7</param>
-        /// <param name="line">value between 0 and 7</param>
+        /// <param name="row">value between 0 and 7</param>
         /// <param name="isWhite">true for white move, false for black move</param>
         /// <returns></returns>
-        public bool PlayMove(int column, int line, bool isWhite)
+        public bool PlayMove(int column, int row, bool isWhite)
         {
-            return board.PosePiece(line, column, CurrentPlayer.Team);
+            if (IsPlayable(column, row, isWhite))
+                history.Push(new Board(board));
+            return board.PosePiece(row, column, CurrentPlayer.Team);
         }
 
         /// <summary>
