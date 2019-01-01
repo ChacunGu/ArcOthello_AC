@@ -36,6 +36,14 @@ namespace ArcOthello_AC
         private bool playerPassed = false;
         private Stack<Board> history;
 
+        #region Indexer
+        public Stack<Board> History
+        {
+            get { return history; }
+        }
+        #endregion
+
+
         #region Timer
         Stopwatch stopWatch = new Stopwatch();
 
@@ -50,6 +58,11 @@ namespace ArcOthello_AC
 
 
         #region GUI events
+        public void Exit(object sender, RoutedEventArgs e)
+        {
+            System.Windows.Application.Current.Shutdown();
+        }
+
         private void NewGame(object sender, RoutedEventArgs e)
         {
             PopupMenu.IsOpen = false;
@@ -63,16 +76,12 @@ namespace ArcOthello_AC
             PopupMenu.IsOpen = true;
         }
 
-        private void Exit(object sender, RoutedEventArgs e)
-        {
-            System.Windows.Application.Current.Shutdown();
-        }
-
         private void PopupMenu_Loaded(object sender, RoutedEventArgs e)
         {
             PopupMenu.HorizontalOffset = (ActualWidth - PopupMenu_content.Width) / 2;
             PopupMenu.VerticalOffset = ActualHeight / 2;
         }
+
         private void PopupEndGame_Loaded(object sender, RoutedEventArgs e)
         {
             PopupEndGame.HorizontalOffset = (ActualWidth - PopupEndGame_content.Width) / 2;
@@ -94,9 +103,10 @@ namespace ArcOthello_AC
             ScoreP2.DataContext = player2;
             TimeP1.DataContext = player1;
             TimeP2.DataContext = player2;
+            history = new Stack<Board>();
         }
 
-        private void Init()
+        public void Init()
         {
             history = new Stack<Board>();
             player1 = new Player(Team.White);
@@ -117,14 +127,7 @@ namespace ArcOthello_AC
             dispatcherTimer.Start();
             stopWatch.Start();
         }
-
-        private void Undo()
-        {
-            board = history.Pop();
-            NextPlayer();
-            // TODO timers ? interface
-        }
-
+        
 
         #region Game Saver
         public void Save(string path)
@@ -160,6 +163,27 @@ namespace ArcOthello_AC
                 CurrentPlayer = (bool)formatter.Deserialize(stream) == true ? player1 : player2;
                 board = (Board)formatter.Deserialize(stream);
                 ResetDataContext();
+            }
+        }
+        #endregion
+
+
+        #region Undo
+        public void Undo()
+        {
+            if (isGameOn)
+            {
+                Board backupBoard = history.Pop();
+                for (int y = 0; y < board.GridHeight; y++)
+                {
+                    for (int x = 0; x < board.GridWidth; x++)
+                    {
+                        board.SetPiece(y, x, backupBoard[y, x]);
+                    }
+                }
+                
+                RecalculateScore();
+                NextPlayer();
             }
         }
         #endregion

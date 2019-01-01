@@ -68,7 +68,7 @@ namespace ArcOthello_AC
 
         private void NewCommand_Executed(object sender, ExecutedRoutedEventArgs e)
         {
-            // TODO create a new game
+            GameInstance.Init();
         }
 
         private void SaveCommand_CanExecute(object sender, CanExecuteRoutedEventArgs e)
@@ -131,6 +131,21 @@ namespace ArcOthello_AC
                 filename = dlg.FileName;
                 GameInstance.Load(filename);
             }
+        }
+
+        private void UndoCommand_CanExecute(object sender, CanExecuteRoutedEventArgs e)
+        {
+            e.CanExecute = GameInstance.History != null && GameInstance.History.Count() > 0;
+        }
+
+        private void UndoCommand_Executed(object sender, ExecutedRoutedEventArgs e)
+        {
+            GameInstance.Undo();
+        }
+
+        private void Exit(object sender, RoutedEventArgs e)
+        {
+            GameInstance.Exit(sender, e);
         }
 
         #region PropertyChanged implementation

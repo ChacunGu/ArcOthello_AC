@@ -85,6 +85,15 @@ namespace ArcOthello_AC
             }
         }
 
+        public void SetPiece(int row, int col, Piece p)
+        {
+            if (row < 0 || row >= GridHeight)
+                throw new ArgumentOutOfRangeException("row", row, "Invalid Row Index");
+            if (col < 0 || col >= GridWidth)
+                throw new ArgumentOutOfRangeException("col", col, "Invalid Column Index");
+            pieces[col][row] = p;
+        }
+
         public bool PosePiece(int row, int col, Team team)
         {
             if (IsPositionValid(row, col))

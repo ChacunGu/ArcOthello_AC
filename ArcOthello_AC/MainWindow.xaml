@@ -12,6 +12,7 @@
         <CommandBinding Command="Save" CanExecute="SaveCommand_CanExecute" Executed="SaveCommand_Executed" />
         <CommandBinding Command="SaveAs" CanExecute="SaveAsCommand_CanExecute" Executed="SaveAsCommand_Executed" />
         <CommandBinding Command="Open" CanExecute="OpenCommand_CanExecute" Executed="OpenCommand_Executed" />
+        <CommandBinding Command="Undo" CanExecute="UndoCommand_CanExecute" Executed="UndoCommand_Executed" />
     </Window.CommandBindings>
     
     <Grid>
@@ -25,8 +26,9 @@
                 <MenuItem Header="_Save" Command="Save"/>
                 <MenuItem Header="Save _As" Command="SaveAs" />
                 <MenuItem Header="_Load" Command="Open" />
+                <MenuItem Header="_Undo" Command="Undo" />
                 <Separator />
-                <MenuItem Header="_Exit" />
+                <MenuItem Header="_Exit" Click="Exit" />
             </MenuItem>
         </Menu>
         <Grid Grid.Row="1">
