@@ -58,6 +58,7 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="AnimatedContentControl.cs" />
+    <Compile Include="BackgroundColorConverter.cs" />
     <Compile Include="Board.cs" />
     <Compile Include="Constants.cs" />
     <Compile Include="DatabindingDebugConverter.cs" />
@@ -130,6 +131,23 @@
     <Resource Include="Images\nvidia.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Resource>
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\amd-vega.png" />
+    <Resource Include="Images\nvidia-rtx.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\wood.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\pcb.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\pcb.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

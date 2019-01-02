@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -24,11 +25,11 @@ namespace ArcOthello_AC
     /// <summary>
     /// Interaction logic for Game.xaml
     /// </summary>
-    public partial class Game : UserControl, IPlayable.IPlayable
+    public partial class Game : UserControl, IPlayable.IPlayable, INotifyPropertyChanged
     {
-        private Player player1;
-        private Player player2;
-
+        public Player Player1 { get; set; }
+        public Player Player2 { get; set; }
+        
         private Board board;
         
         private Player CurrentPlayer;
@@ -92,25 +93,27 @@ namespace ArcOthello_AC
         public Game()
         {
             InitializeComponent();
+            Player1 = new Player(Team.Black);
+            Player2 = new Player(Team.White);
             PopupMenu.IsOpen = true;
         }
 
         private void ResetDataContext()
         {
             PieceList.DataContext = board;
-            ScoreP1.DataContext = player1;
-            ScoreP2.DataContext = player2;
-            TimeP1.DataContext = player1;
-            TimeP2.DataContext = player2;
+            ScoreP1.DataContext = Player1;
+            ScoreP2.DataContext = Player2;
+            TimeP1.DataContext = Player1;
+            TimeP2.DataContext = Player2;
             history = new Stack<Board>();
         }
 
         public void Init()
         {
             history = new Stack<Board>();
-            player1 = new Player(Team.White);
-            player2 = new Player(Team.Black);
-            CurrentPlayer = player1;
+            Player1 = new Player(Team.Black);
+            Player2 = new Player(Team.White);
+            CurrentPlayer = Player1;
             board = new Board(Constants.GRID_WIDTH, Constants.GRID_HEIGHT);
 
             ResetDataContext();
@@ -122,6 +125,7 @@ namespace ArcOthello_AC
             playerPassed = false;
 
             ShowPossibleMove();
+            RecalculateScore();
 
             dispatcherTimer.Start();
             stopWatch.Start();
@@ -144,8 +148,8 @@ namespace ArcOthello_AC
             IFormatter formatter = new BinaryFormatter();
             using (FileStream stream = new FileStream(path, FileMode.Create, FileAccess.Write, FileShare.None))
             {
-                formatter.Serialize(stream, player1);
-                formatter.Serialize(stream, player2);
+                formatter.Serialize(stream, Player1);
+                formatter.Serialize(stream, Player2);
                 formatter.Serialize(stream, CurrentPlayer.Team == Team.Black ? true : false);
                 formatter.Serialize(stream, board);
             }
@@ -157,9 +161,9 @@ namespace ArcOthello_AC
             using (FileStream stream = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.None))
             {
 
-                player1 = (Player)formatter.Deserialize(stream);
-                player2 = (Player)formatter.Deserialize(stream);
-                CurrentPlayer = (bool)formatter.Deserialize(stream) == true ? player1 : player2;
+                Player1 = (Player)formatter.Deserialize(stream);
+                Player2 = (Player)formatter.Deserialize(stream);
+                CurrentPlayer = (bool)formatter.Deserialize(stream) == true ? Player1 : Player2;
                 board = (Board)formatter.Deserialize(stream);
                 ResetDataContext();
             }
@@ -204,7 +208,7 @@ namespace ArcOthello_AC
 
         private void NextPlayer()
         {
-            CurrentPlayer = CurrentPlayer == player1 ? player2 : player1;
+            CurrentPlayer = CurrentPlayer == Player1 ? Player2 : Player1;
         }
 
         private void EndTurn()
@@ -239,8 +243,8 @@ namespace ArcOthello_AC
         {
             isGameOn = false;
             PopupEndGame.IsOpen = true;
-            PopupEndGame_WinnerName.Text = (player1.Score > player2.Score ?  "White wins the game" : 
-                                            player1.Score == player2.Score ? "Draw !" :
+            PopupEndGame_WinnerName.Text = (Player1.Score > Player2.Score ?  "White wins the game" : 
+                                            Player1.Score == Player2.Score ? "Draw !" :
                                                                              "Black wins the game");
         }
 
@@ -263,18 +267,20 @@ namespace ArcOthello_AC
 
         private void RecalculateScore()
         {
-            player1.Score = 0;
-            player2.Score = 0;
+            Player1.Score = 0;
+            Player2.Score = 0;
             foreach(ObservableCollection<Piece> row in board.Pieces)
             {
                 foreach(Piece p in row)
                 {
-                    if (p.Team == player1.Team)
-                        player1.Score++;
-                    else if (p.Team == player2.Team)
-                        player2.Score++;
+                    if (p.Team == Player1.Team)
+                        Player1.Score++;
+                    else if (p.Team == Player2.Team)
+                        Player2.Score++;
                 }
             }
+            RaisePropertyChanged("Player1");
+            RaisePropertyChanged("Player2");
         }
 
         private void ShowPossibleMove()
@@ -282,7 +288,16 @@ namespace ArcOthello_AC
             board.ShowPossibleMove(CurrentPlayer.Team);
         }
         #endregion
-        
+
+        #region PropertyChanged implementation
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        void RaisePropertyChanged(string propertyName)
+        {
+            if (PropertyChanged != null)
+                PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
+        }
+        #endregion
 
         #region IPlayable Implementation
         /// <summary>
@@ -372,7 +387,7 @@ namespace ArcOthello_AC
         /// <returns>white player's score</returns>
         public int GetWhiteScore()
         {
-            return player1.Score;
+            return Player1.Score;
         }
 
         /// <summary>
@@ -381,7 +396,7 @@ namespace ArcOthello_AC
         /// <returns>black player's score</returns>
         public int GetBlackScore()
         {
-            return player2.Score;
+            return Player2.Score;
         }
         #endregion
     }

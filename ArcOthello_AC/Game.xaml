@@ -104,7 +104,10 @@
         </Grid>
 
 
-        <ItemsControl ItemsSource="{Binding Pieces}" x:Name="PieceList" ItemTemplate ="{StaticResource OuterRowTemplate}" Grid.Row="1" Background="#FF00FF0C" Foreground="White" MouseDown="Board_Click">
+        <ItemsControl ItemsSource="{Binding Pieces}" x:Name="PieceList" ItemTemplate ="{StaticResource OuterRowTemplate}" Grid.Row="1" Foreground="White" MouseDown="Board_Click">
+            <ItemsControl.Background>
+                <ImageBrush ImageSource="Images/pcb.png"/>
+            </ItemsControl.Background>
             <ItemsControl.ItemsPanel>
                 <ItemsPanelTemplate>
                     <UniformGrid Rows="1"/>
