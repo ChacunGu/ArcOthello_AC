@@ -43,7 +43,6 @@ namespace ArcOthello_AC
         }
         #endregion
 
-
         #region Timer
         Stopwatch stopWatch = new Stopwatch();
 
@@ -60,7 +59,7 @@ namespace ArcOthello_AC
         #region GUI events
         public void Exit(object sender, RoutedEventArgs e)
         {
-            System.Windows.Application.Current.Shutdown();
+            Application.Current.Shutdown();
         }
 
         private void NewGame(object sender, RoutedEventArgs e)
