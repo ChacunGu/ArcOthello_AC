@@ -109,8 +109,8 @@ namespace ArcOthello_AC
         public void Init()
         {
             history = new Stack<Board>();
-            player1 = new Player(Team.White);
-            player2 = new Player(Team.Black);
+            player1 = new Player(Team.Black);
+            player2 = new Player(Team.White);
             CurrentPlayer = player1;
             board = new Board(Constants.GRID_WIDTH, Constants.GRID_HEIGHT);
 
@@ -373,7 +373,7 @@ namespace ArcOthello_AC
         /// <returns>white player's score</returns>
         public int GetWhiteScore()
         {
-            return player1.Score;
+            return player2.Score;
         }
 
         /// <summary>
@@ -382,7 +382,7 @@ namespace ArcOthello_AC
         /// <returns>black player's score</returns>
         public int GetBlackScore()
         {
-            return player2.Score;
+            return player1.Score;
         }
         #endregion
     }
