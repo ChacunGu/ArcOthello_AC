@@ -27,13 +27,29 @@ namespace ArcOthello_AC
             switch(t)
             {
                 case Team.Black:
-                    return BlackImage;
+                    return new Image
+                    {
+                        Source = BlackImage,
+                        Tag = "valid"
+                    };
                 case Team.White:
-                    return WhiteImage;
+                    return new Image
+                    {
+                        Source = WhiteImage,
+                        Tag = "valid"
+                    };
                 case Team.BlackPreview:
-                    return BlackImagePreview;
+                    return new Image
+                    {
+                        Source = BlackImagePreview,
+                        Tag = null
+                    };
                 case Team.WhitePreview:
-                    return WhiteImagePreview;
+                    return new Image
+                    {
+                        Source = WhiteImagePreview,
+                        Tag = null
+                    };
                 default:
                     return null;
             }

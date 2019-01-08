@@ -21,7 +21,19 @@
 
         <DataTemplate x:Key ="CellTemplate" >
             <Border x:Name ="Border" BorderBrush ="DimGray" BorderThickness ="1" >
-                <Image Source="{Binding Team, Converter={StaticResource TeamToImageConverter}}" />
+                <Border.Style>
+                    <Style TargetType="{x:Type Border}">
+                        <Setter Property="Background" Value="Transparent" />
+                        <Style.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Background" Value="#55B9D7FC" />
+                            </Trigger>
+                        </Style.Triggers>
+                    </Style>
+                </Border.Style>
+                <local:AnimatedContentControl Content="{Binding Team, Converter={StaticResource TeamToImageConverter}}"/>
+
+                <!--<Image Source="{Binding Team, Converter={StaticResource TeamToImageConverter}, NotifyOnTargetUpdated=True}" />-->
             </Border>
         </DataTemplate>
 
@@ -92,7 +104,10 @@
         </Grid>
 
 
-        <ItemsControl ItemsSource="{Binding Pieces}" x:Name="PieceList" ItemTemplate ="{StaticResource OuterRowTemplate}" Grid.Row="1" Background="#FF00FF0C" Foreground="White" MouseDown="Board_Click">
+        <ItemsControl ItemsSource="{Binding Pieces}" x:Name="PieceList" ItemTemplate ="{StaticResource OuterRowTemplate}" Grid.Row="1" Foreground="White" MouseDown="Board_Click">
+            <ItemsControl.Background>
+                <ImageBrush ImageSource="Images/pcb.png"/>
+            </ItemsControl.Background>
             <ItemsControl.ItemsPanel>
                 <ItemsPanelTemplate>
                     <UniformGrid Rows="1"/>

@@ -53,6 +53,7 @@ namespace ArcOthello_AC
         {
             InitializeComponent();
             DataContext = this;
+            BoardGrid.DataContext = GameInstance;
             Init();
             
         }
