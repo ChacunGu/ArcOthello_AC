@@ -364,6 +364,11 @@ namespace ArcOthello_AC
             throw new NotImplementedException(); // TODO
         }
 
+        private Tuple<int, Tuple<int, int>> alphabeta(int[,] gameRoot, int level, bool turn, int parentScore)
+        {
+            throw new NotImplementedException(); // TODO
+        }
+
         /// <summary>
         /// Returns a reference to a 2D array with the board status
         /// </summary>
