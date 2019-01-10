@@ -16,8 +16,12 @@
         <BitmapImage UriSource="/Images/amd.png" x:Key="WhiteImage" />
         <BitmapImage UriSource="/Images/nvidia-preview.png" x:Key="BlackImagePreview" />
         <BitmapImage UriSource="/Images/amd-preview.png" x:Key="WhiteImagePreview" />
+
+        <Color x:Key="Player1Color">#FF3BC739</Color>
+        <Color x:Key="Player2Color">#FFF74141</Color>
         <local:TeamToImageConverter BlackImage="{StaticResource BlackImage }" WhiteImage="{StaticResource WhiteImage}" BlackImagePreview="{StaticResource BlackImagePreview }" WhiteImagePreview="{StaticResource WhiteImagePreview}" x:Key="TeamToImageConverter"/>
         <local:DatabindingDebugConverter x:Key="debugConverter" />
+        <local:BackgroundColorConverter Player1Color="{StaticResource Player1Color}" Player2Color="{StaticResource Player2Color}" x:Key="BackgroundColorConverter" />
 
         <DataTemplate x:Key ="CellTemplate" >
             <Border x:Name ="Border" BorderBrush ="DimGray" BorderThickness ="1" >
@@ -32,8 +36,6 @@
                     </Style>
                 </Border.Style>
                 <local:AnimatedContentControl Content="{Binding Team, Converter={StaticResource TeamToImageConverter}}"/>
-
-                <!--<Image Source="{Binding Team, Converter={StaticResource TeamToImageConverter}, NotifyOnTargetUpdated=True}" />-->
             </Border>
         </DataTemplate>
 
@@ -103,17 +105,26 @@
             </Label>
         </Grid>
 
+        <Grid Name="BoardGrid" Grid.Row="1">
+            <Grid.Background>
+                <MultiBinding Converter="{StaticResource BackgroundColorConverter}">
+                    <Binding Path="Player1.Score" />
+                    <Binding Path="Player2.Score" />
+                </MultiBinding>
+            </Grid.Background>
 
-        <ItemsControl ItemsSource="{Binding Pieces}" x:Name="PieceList" ItemTemplate ="{StaticResource OuterRowTemplate}" Grid.Row="1" Foreground="White" MouseDown="Board_Click">
-            <ItemsControl.Background>
-                <ImageBrush ImageSource="Images/pcb.png"/>
-            </ItemsControl.Background>
-            <ItemsControl.ItemsPanel>
-                <ItemsPanelTemplate>
-                    <UniformGrid Rows="1"/>
-                </ItemsPanelTemplate>
-            </ItemsControl.ItemsPanel>
-        </ItemsControl>
+            <ItemsControl ItemsSource="{Binding Pieces}" x:Name="PieceList" ItemTemplate ="{StaticResource OuterRowTemplate}" Grid.Row="1" Foreground="White" MouseDown="Board_Click">
+                <ItemsControl.Background>
+                    <ImageBrush ImageSource="Images/pcb.png"/>
+                </ItemsControl.Background>
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <UniformGrid Rows="1"/>
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+            </ItemsControl>
+
+        </Grid>
 
         <Popup Name="PopupMenu" IsOpen="False" Loaded="PopupMenu_Loaded">
             <StackPanel Name="PopupMenu_content" Width="200" Height="200">

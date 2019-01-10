@@ -56,7 +56,7 @@ namespace ArcOthello_AC
 				m_paintArea.Fill = CreateBrushFromVisual(m_mainContent);
 
                 // Used when flipping a piece
-                if (newContent != null && ((Image)newContent).Tag != null)
+                if (newContent != null && newContent is Image && ((Image)newContent).Tag != null)
                     BeginAnimationPieceFlip();
                 else // Used when posing a piece
                 {

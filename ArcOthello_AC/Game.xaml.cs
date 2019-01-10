@@ -93,6 +93,7 @@ namespace ArcOthello_AC
         public Game()
         {
             InitializeComponent();
+            BoardGrid.DataContext = this;
             Player1 = new Player(Team.Black);
             Player2 = new Player(Team.White);
             PopupMenu.IsOpen = true;
