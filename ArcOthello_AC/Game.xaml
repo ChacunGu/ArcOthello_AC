@@ -115,19 +115,19 @@
             </ItemsControl.ItemsPanel>
         </ItemsControl>
 
-        <Popup Name="PopupMenu" IsOpen="False" Loaded="PopupMenu_Loaded">
-            <StackPanel Name="PopupMenu_content" Width="200" Height="200">
-                <TextBlock Name="PopupMenu_Title" ></TextBlock>
-                <Button Content="Start a new game" Click="NewGame" />
-                <!--<Button Content="Load a save" Click="Load" />-->
-                <Button Content="Exit" Click="Exit" />
+        <Popup x:Name="PopupMenu" IsOpen="False" Loaded="PopupMenu_Loaded" HorizontalAlignment="Center" VerticalAlignment="Center" PopupAnimation="Fade">
+            <StackPanel Name="PopupMenu_content" Width="214" Height="137" Background="White">
+                <TextBlock Name="PopupMenu_Title" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,10,0,0" FontSize="18" >Othello - Abdalla/Chacun</TextBlock>
+                <Button Content="Start a new game" Click="NewGame" Margin="0,10,0,0" HorizontalAlignment="Center" VerticalAlignment="Center" Width="100" />
+                <Button Content="Load a save" Click="PopupLoadCommand" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,10,0,0" Width="100" />
+                <Button Content="Exit" Click="Exit" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,10,0,0" Width="100" />
             </StackPanel>
         </Popup>
 
-        <Popup Name="PopupEndGame" IsOpen="False" Loaded="PopupEndGame_Loaded">
-            <StackPanel Name="PopupEndGame_content" Width="200" Height="200">
-                <TextBlock Name="PopupEndGame_WinnerName" Background="LightGreen" ></TextBlock>
-                <Button Content="Go back to menu" Click="GoBackToMenu" />
+        <Popup x:Name="PopupEndGame" IsOpen="False" Loaded="PopupEndGame_Loaded" HorizontalAlignment="Center" VerticalAlignment="Center" PopupAnimation="Fade">
+            <StackPanel Name="PopupEndGame_content" Width="214" Height="137" Background="White">
+                <TextBlock Name="PopupEndGame_WinnerName" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,50,0,0" FontSize="14"></TextBlock>
+                <Button Content="Go back to menu" Click="GoBackToMenu" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,10,0,0" Width="100" />
             </StackPanel>
         </Popup>
     </Grid>

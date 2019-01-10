@@ -30,7 +30,7 @@ namespace ArcOthello_AC
         public Player Player1 { get; set; }
         public Player Player2 { get; set; }
         
-        private Board board;
+        public Board Board { get; private set; }
         
         private Player CurrentPlayer;
         private bool isGameOn = false;
@@ -63,11 +63,16 @@ namespace ArcOthello_AC
             Application.Current.Shutdown();
         }
 
-        private void NewGame(object sender, RoutedEventArgs e)
+        public void NewGame(object sender = null, RoutedEventArgs e = null)
         {
             PopupMenu.IsOpen = false;
 
             Init();
+        }
+        public void PopupLoadCommand(object sender, RoutedEventArgs e)
+        {
+            PopupMenu.IsOpen = false;
+            ((MainWindow)Application.Current.MainWindow).OpenSave();
         }
 
         private void GoBackToMenu(object sender, RoutedEventArgs e)
@@ -100,7 +105,7 @@ namespace ArcOthello_AC
 
         private void ResetDataContext()
         {
-            PieceList.DataContext = board;
+            PieceList.DataContext = Board;
             ScoreP1.DataContext = Player1;
             ScoreP2.DataContext = Player2;
             TimeP1.DataContext = Player1;
@@ -116,7 +121,7 @@ namespace ArcOthello_AC
             Player2 = new Player(Team.White);
             CurrentPlayer = Player1;
 
-            board = new Board(Constants.GRID_WIDTH, Constants.GRID_HEIGHT);
+            Board = new Board(Constants.GRID_WIDTH, Constants.GRID_HEIGHT);
 
             ResetDataContext();
 
@@ -153,7 +158,7 @@ namespace ArcOthello_AC
                 formatter.Serialize(stream, Player1);
                 formatter.Serialize(stream, Player2);
                 formatter.Serialize(stream, CurrentPlayer.Team == Team.Black ? true : false);
-                formatter.Serialize(stream, board);
+                formatter.Serialize(stream, Board);
             }
         }
 
@@ -166,7 +171,7 @@ namespace ArcOthello_AC
                 Player1 = (Player)formatter.Deserialize(stream);
                 Player2 = (Player)formatter.Deserialize(stream);
                 CurrentPlayer = (bool)formatter.Deserialize(stream) == true ? Player1 : Player2;
-                board = (Board)formatter.Deserialize(stream);
+                Board = (Board)formatter.Deserialize(stream);
                 ResetDataContext();
             }
         }
@@ -179,11 +184,11 @@ namespace ArcOthello_AC
             if (isGameOn)
             {
                 Board backupBoard = history.Pop();
-                for (int y = 0; y < board.GridHeight; y++)
+                for (int y = 0; y < Board.GridHeight; y++)
                 {
-                    for (int x = 0; x < board.GridWidth; x++)
+                    for (int x = 0; x < Board.GridWidth; x++)
                     {
-                        board.SetPiece(y, x, backupBoard[y, x]);
+                        Board.SetPiece(y, x, backupBoard[y, x]);
                     }
                 }
                 
@@ -201,8 +206,8 @@ namespace ArcOthello_AC
             {
                 ItemsControl i = sender as ItemsControl;
                 Point p = e.GetPosition(i);
-                int x = (int)(p.X / i.ActualWidth * board.GridWidth);
-                int y = (int)(p.Y / i.ActualHeight * board.GridHeight);
+                int x = (int)(p.X / i.ActualWidth * Board.GridWidth);
+                int y = (int)(p.Y / i.ActualHeight * Board.GridHeight);
                 if (PlayMove(x, y, CurrentPlayer.Team == Team.White))
                     EndTurn();
             }
@@ -238,21 +243,21 @@ namespace ArcOthello_AC
 
         private bool CanCurrentPlayerPlay()
         {
-            return board.NumberPossibleMove(CurrentPlayer.Team) > 0;
+            return Board.NumberPossibleMove(CurrentPlayer.Team) > 0;
         }
 
         private void EndGame()
         {
             isGameOn = false;
             PopupEndGame.IsOpen = true;
-            PopupEndGame_WinnerName.Text = (Player1.Score > Player2.Score ?  "White wins the game" : 
+            PopupEndGame_WinnerName.Text = (Player1.Score > Player2.Score ?  "NVIDIA wins the game" : 
                                             Player1.Score == Player2.Score ? "Draw !" :
-                                                                             "Black wins the game");
+                                                                             "AMD wins the game");
         }
 
         private void ClearPreview()
         {
-            foreach (ObservableCollection<Piece> row in board.Pieces)
+            foreach (ObservableCollection<Piece> row in Board.Pieces)
             {
                 foreach (Piece p in row)
                 {
@@ -271,7 +276,7 @@ namespace ArcOthello_AC
         {
             Player1.Score = 0;
             Player2.Score = 0;
-            foreach(ObservableCollection<Piece> row in board.Pieces)
+            foreach(ObservableCollection<Piece> row in Board.Pieces)
             {
                 foreach(Piece p in row)
                 {
@@ -287,7 +292,7 @@ namespace ArcOthello_AC
 
         private void ShowPossibleMove()
         {
-            board.ShowPossibleMove(CurrentPlayer.Team);
+            Board.ShowPossibleMove(CurrentPlayer.Team);
         }
         #endregion
 
@@ -320,7 +325,7 @@ namespace ArcOthello_AC
         /// <returns>true or false</returns>
         public bool IsPlayable(int column, int row, bool isWhite)
         {
-            return board.IsValid(row, column, isWhite ? Team.White : Team.Black);
+            return Board.IsValid(row, column, isWhite ? Team.White : Team.Black);
         }
 
         /// <summary>
@@ -334,8 +339,8 @@ namespace ArcOthello_AC
         public bool PlayMove(int column, int row, bool isWhite)
         {
             if (IsPlayable(column, row, isWhite))
-                history.Push(new Board(board));
-            return board.PosePiece(row, column, CurrentPlayer.Team);
+                history.Push(new Board(Board));
+            return Board.PosePiece(row, column, CurrentPlayer.Team);
         }
 
         /// <summary>
@@ -370,13 +375,13 @@ namespace ArcOthello_AC
         /// <returns>The 7x9 tiles status</returns>
         public int[,] GetBoard()
         {
-            int[,] boardInt = new int[board.GridHeight, board.GridWidth];
-            for (int y=0; y<board.GridHeight; y++)
+            int[,] boardInt = new int[Board.GridHeight, Board.GridWidth];
+            for (int y=0; y<Board.GridHeight; y++)
             {
-                for (int x=0; x<board.GridWidth; x++)
+                for (int x=0; x<Board.GridWidth; x++)
                 {
-                    boardInt[y, x] = board[y, x] == null ? -1 :
-                                     board[y, x].Team == Team.White ? 0 :
+                    boardInt[y, x] = Board[y, x] == null ? -1 :
+                                     Board[y, x].Team == Team.White ? 0 :
                                      1;
                 }
             }
