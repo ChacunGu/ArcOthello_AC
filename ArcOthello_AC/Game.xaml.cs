@@ -25,7 +25,7 @@ namespace ArcOthello_AC
     /// <summary>
     /// Interaction logic for Game.xaml
     /// </summary>
-    public partial class Game : UserControl, IPlayable.IPlayable, INotifyPropertyChanged
+    public partial class Game : UserControl, INotifyPropertyChanged
     {
         public Player Player1 { get; set; }
         public Player Player2 { get; set; }
@@ -209,8 +209,14 @@ namespace ArcOthello_AC
                 Point p = e.GetPosition(i);
                 int x = (int)(p.X / i.ActualWidth * Board.GridWidth);
                 int y = (int)(p.Y / i.ActualHeight * Board.GridHeight);
-                if (PlayMove(x, y, CurrentPlayer.Team == Team.White))
+
+                bool isWhite = CurrentPlayer.Team == Team.White;
+                if (Board.IsPlayable(x, y, isWhite))
+                    history.Push(new Board(Board));
+                if (Board.PlayMove(x, y, isWhite))
+                {
                     EndTurn();
+                }
             }
         }
 
@@ -221,7 +227,7 @@ namespace ArcOthello_AC
 
         private void EndTurn()
         {
-            ClearPreview();
+            Board.ClearPreview();
             RecalculateScore();
             NextPlayer();
 
@@ -255,24 +261,7 @@ namespace ArcOthello_AC
                                             Player1.Score == Player2.Score ? "Draw !" :
                                                                              "AMD wins the game");
         }
-
-        private void ClearPreview()
-        {
-            foreach (ObservableCollection<Piece> row in Board.Pieces)
-            {
-                foreach (Piece p in row)
-                {
-                    if (IsPreview(p))
-                        p.Team = Team.None;
-                }
-            }
-        }
-
-        private bool IsPreview(Piece p)
-        {
-            return p.Team == Team.BlackPreview || p.Team == Team.WhitePreview;
-        }
-
+                
         private void RecalculateScore()
         {
             Player1.Score = 0;
@@ -304,107 +293,6 @@ namespace ArcOthello_AC
         {
             if (PropertyChanged != null)
                 PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
-        }
-        #endregion
-
-        #region IPlayable Implementation
-        /// <summary>
-        /// Returns the IA's name
-        /// </summary>
-        /// <returns>IA's name</returns>
-        public string GetName()
-        {
-            return "Jack";
-        }
-
-        /// <summary>
-        /// Returns true if the move is valid for specified color
-        /// </summary>
-        /// <param name="column">value between 0 and 8</param>
-        /// <param name="row">value between 0 and 6</param>
-        /// <param name="isWhite"></param>
-        /// <returns>true or false</returns>
-        public bool IsPlayable(int column, int row, bool isWhite)
-        {
-            return Board.IsValid(row, column, isWhite ? Team.White : Team.Black);
-        }
-
-        /// <summary>
-        /// Will update the board status if the move is valid and return true
-        /// Will return false otherwise (board is unchanged)
-        /// </summary>
-        /// <param name="column">value between 0 and 7</param>
-        /// <param name="row">value between 0 and 7</param>
-        /// <param name="isWhite">true for white move, false for black move</param>
-        /// <returns></returns>
-        public bool PlayMove(int column, int row, bool isWhite)
-        {
-            if (IsPlayable(column, row, isWhite))
-                history.Push(new Board(Board));
-            return Board.PosePiece(row, column, CurrentPlayer.Team);
-        }
-
-        /// <summary>
-        /// Asks the game engine next (valid) move given a game position
-        /// The board assumes following standard move notation:
-        /// 
-        ///             A B C D E F G H I
-        ///         [ ][0 1 2 3 4 5 6 7 8]     (first index)
-        ///        1 0
-        ///        2 1
-        ///        3 2        X
-        ///        4 3            X
-        ///        5 4
-        ///        6 5
-        ///        7 6
-        ///       
-        ///          Column Line
-        ///  E.g.:    D3, F4 game notation will map to {3,2} resp. {5,3}
-        /// </summary>
-        /// <param name="game">a 2D board with integer values: 0 for white 1 for black and -1 for empty tiles. First index for the column, second index for the line</param>
-        /// <param name="level">an integer value to set the level of the IA, 5 normally</param>
-        /// <param name="whiteTurn">true if white players turn, false otherwise</param>
-        /// <returns>The column and line indices. Will return {-1,-1} as PASS if no possible move </returns>
-        public Tuple<int, int> GetNextMove(int[,] game, int level, bool whiteTurn)
-        {
-            throw new NotImplementedException(); // TODO
-        }
-
-        /// <summary>
-        /// Returns a reference to a 2D array with the board status
-        /// </summary>
-        /// <returns>The 7x9 tiles status</returns>
-        public int[,] GetBoard()
-        {
-            int[,] boardInt = new int[Board.GridHeight, Board.GridWidth];
-            for (int y=0; y<Board.GridHeight; y++)
-            {
-                for (int x=0; x<Board.GridWidth; x++)
-                {
-                    boardInt[y, x] = Board[y, x] == null ? -1 :
-                                     Board[y, x].Team == Team.White ? 0 :
-                                     1;
-                }
-            }
-            return boardInt;
-        }
-
-        /// <summary>
-        /// Returns the number of white tiles on the board
-        /// </summary>
-        /// <returns>white player's score</returns>
-        public int GetWhiteScore()
-        {
-            return Player2.Score;
-        }
-
-        /// <summary>
-        /// Returns the number of black tiles
-        /// </summary>
-        /// <returns>black player's score</returns>
-        public int GetBlackScore()
-        {
-            return Player1.Score;
         }
         #endregion
     }
