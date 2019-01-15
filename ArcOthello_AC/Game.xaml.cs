@@ -11,6 +11,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Controls.Primitives;
 using System.Windows.Data;
 using System.Windows.Documents;
 using System.Windows.Input;
@@ -168,11 +169,29 @@ namespace ArcOthello_AC
             IFormatter formatter = new BinaryFormatter();
             using (FileStream stream = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.None))
             {
+                try
+                {
+                    Player tmpP1 = (Player)formatter.Deserialize(stream);
+                    Player tmpP2 = (Player)formatter.Deserialize(stream);
+                    Player tmpCurrentPlayer = CurrentPlayer = (bool)formatter.Deserialize(stream) == true ? Player1 : Player2;
+                    Board tmpBoard = (Board)formatter.Deserialize(stream);
 
-                Player1 = (Player)formatter.Deserialize(stream);
-                Player2 = (Player)formatter.Deserialize(stream);
-                CurrentPlayer = (bool)formatter.Deserialize(stream) == true ? Player1 : Player2;
-                Board = (Board)formatter.Deserialize(stream);
+                    Player1 = tmpP1;
+                    Player2 = tmpP2;
+                    CurrentPlayer = tmpCurrentPlayer;
+                    Board = tmpBoard;
+
+                    ResetDataContext();
+                }
+                catch(SerializationException e)
+                {
+                    MessageBoxResult result = MessageBox.Show("There is a problem with your file",
+                                          "Problem",
+                                          MessageBoxButton.OK,
+                                          MessageBoxImage.Error);
+                }
+
+                
                 ResetDataContext();
             }
         }
