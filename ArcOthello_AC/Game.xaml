@@ -16,8 +16,12 @@
         <BitmapImage UriSource="/Images/amd.png" x:Key="WhiteImage" />
         <BitmapImage UriSource="/Images/nvidia-preview.png" x:Key="BlackImagePreview" />
         <BitmapImage UriSource="/Images/amd-preview.png" x:Key="WhiteImagePreview" />
+
+        <Color x:Key="Player1Color">#FF3BC739</Color>
+        <Color x:Key="Player2Color">#FFF74141</Color>
         <local:TeamToImageConverter BlackImage="{StaticResource BlackImage }" WhiteImage="{StaticResource WhiteImage}" BlackImagePreview="{StaticResource BlackImagePreview }" WhiteImagePreview="{StaticResource WhiteImagePreview}" x:Key="TeamToImageConverter"/>
         <local:DatabindingDebugConverter x:Key="debugConverter" />
+        <local:BackgroundColorConverter Player1Color="{StaticResource Player1Color}" Player2Color="{StaticResource Player2Color}" x:Key="BackgroundColorConverter" />
 
         <DataTemplate x:Key ="CellTemplate" >
             <Border x:Name ="Border" BorderBrush ="DimGray" BorderThickness ="1" >
@@ -32,8 +36,6 @@
                     </Style>
                 </Border.Style>
                 <local:AnimatedContentControl Content="{Binding Team, Converter={StaticResource TeamToImageConverter}}"/>
-
-                <!--<Image Source="{Binding Team, Converter={StaticResource TeamToImageConverter}, NotifyOnTargetUpdated=True}" />-->
             </Border>
         </DataTemplate>
 
@@ -103,31 +105,40 @@
             </Label>
         </Grid>
 
+        <Grid Name="BoardGrid" Grid.Row="1">
+            <Grid.Background>
+                <MultiBinding Converter="{StaticResource BackgroundColorConverter}">
+                    <Binding Path="Player1.Score" />
+                    <Binding Path="Player2.Score" />
+                </MultiBinding>
+            </Grid.Background>
 
-        <ItemsControl ItemsSource="{Binding Pieces}" x:Name="PieceList" ItemTemplate ="{StaticResource OuterRowTemplate}" Grid.Row="1" Foreground="White" MouseDown="Board_Click">
-            <ItemsControl.Background>
-                <ImageBrush ImageSource="Images/pcb.png"/>
-            </ItemsControl.Background>
-            <ItemsControl.ItemsPanel>
-                <ItemsPanelTemplate>
-                    <UniformGrid Rows="1"/>
-                </ItemsPanelTemplate>
-            </ItemsControl.ItemsPanel>
-        </ItemsControl>
+            <ItemsControl ItemsSource="{Binding Pieces}" x:Name="PieceList" ItemTemplate ="{StaticResource OuterRowTemplate}" Grid.Row="1" Foreground="White" MouseDown="Board_Click">
+                <ItemsControl.Background>
+                    <ImageBrush ImageSource="Images/pcb.png"/>
+                </ItemsControl.Background>
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <UniformGrid Rows="1"/>
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+            </ItemsControl>
 
-        <Popup Name="PopupMenu" IsOpen="False" Loaded="PopupMenu_Loaded">
-            <StackPanel Name="PopupMenu_content" Width="200" Height="200">
-                <TextBlock Name="PopupMenu_Title" ></TextBlock>
-                <Button Content="Start a new game" Click="NewGame" />
-                <!--<Button Content="Load a save" Click="Load" />-->
-                <Button Content="Exit" Click="Exit" />
+        </Grid>
+
+        <Popup x:Name="PopupMenu" IsOpen="False" Loaded="PopupMenu_Loaded" HorizontalAlignment="Center" VerticalAlignment="Center" PopupAnimation="Fade">
+            <StackPanel Name="PopupMenu_content" Width="214" Height="137" Background="White">
+                <TextBlock Name="PopupMenu_Title" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,10,0,0" FontSize="18" >Othello - Abdalla/Chacun</TextBlock>
+                <Button Content="Start a new game" Click="NewGame" Margin="0,10,0,0" HorizontalAlignment="Center" VerticalAlignment="Center" Width="100" />
+                <Button Content="Load a save" Click="PopupLoadCommand" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,10,0,0" Width="100" />
+                <Button Content="Exit" Click="Exit" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,10,0,0" Width="100" />
             </StackPanel>
         </Popup>
 
-        <Popup Name="PopupEndGame" IsOpen="False" Loaded="PopupEndGame_Loaded">
-            <StackPanel Name="PopupEndGame_content" Width="200" Height="200">
-                <TextBlock Name="PopupEndGame_WinnerName" Background="LightGreen" ></TextBlock>
-                <Button Content="Go back to menu" Click="GoBackToMenu" />
+        <Popup x:Name="PopupEndGame" IsOpen="False" Loaded="PopupEndGame_Loaded" HorizontalAlignment="Center" VerticalAlignment="Center" PopupAnimation="Fade">
+            <StackPanel Name="PopupEndGame_content" Width="214" Height="137" Background="White">
+                <TextBlock Name="PopupEndGame_WinnerName" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,50,0,0" FontSize="14"></TextBlock>
+                <Button Content="Go back to menu" Click="GoBackToMenu" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,10,0,0" Width="100" />
             </StackPanel>
         </Popup>
     </Grid>

@@ -53,7 +53,6 @@ namespace ArcOthello_AC
         {
             InitializeComponent();
             DataContext = this;
-            BoardGrid.DataContext = GameInstance;
             Init();
             
         }
@@ -69,7 +68,7 @@ namespace ArcOthello_AC
 
         private void NewCommand_Executed(object sender, ExecutedRoutedEventArgs e)
         {
-            GameInstance.Init();
+            GameInstance.NewGame();
         }
 
         private void SaveCommand_CanExecute(object sender, CanExecuteRoutedEventArgs e)
@@ -84,7 +83,7 @@ namespace ArcOthello_AC
 
         private void SaveAsCommand_CanExecute(object sender, CanExecuteRoutedEventArgs e)
         {
-            e.CanExecute = true;
+            e.CanExecute = GameInstance.Board != null;
         }
 
         private void SaveAsCommand_Executed(object sender, ExecutedRoutedEventArgs e)
@@ -115,6 +114,26 @@ namespace ArcOthello_AC
 
         private void OpenCommand_Executed(object sender, ExecutedRoutedEventArgs e)
         {
+            OpenSave();
+        }
+
+        private void UndoCommand_CanExecute(object sender, CanExecuteRoutedEventArgs e)
+        {
+            e.CanExecute = GameInstance.History != null && GameInstance.History.Count() > 0;
+        }
+
+        private void UndoCommand_Executed(object sender, ExecutedRoutedEventArgs e)
+        {
+            GameInstance.Undo();
+        }
+
+        private void Exit(object sender, RoutedEventArgs e)
+        {
+            GameInstance.Exit(sender, e);
+        }
+
+        public void OpenSave()
+        {
             Microsoft.Win32.OpenFileDialog dlg = new Microsoft.Win32.OpenFileDialog
             {
                 FileName = "Save", // Default file name
@@ -132,21 +151,6 @@ namespace ArcOthello_AC
                 filename = dlg.FileName;
                 GameInstance.Load(filename);
             }
-        }
-
-        private void UndoCommand_CanExecute(object sender, CanExecuteRoutedEventArgs e)
-        {
-            e.CanExecute = GameInstance.History != null && GameInstance.History.Count() > 0;
-        }
-
-        private void UndoCommand_Executed(object sender, ExecutedRoutedEventArgs e)
-        {
-            GameInstance.Undo();
-        }
-
-        private void Exit(object sender, RoutedEventArgs e)
-        {
-            GameInstance.Exit(sender, e);
         }
 
         #region PropertyChanged implementation
