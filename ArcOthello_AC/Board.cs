@@ -37,7 +37,7 @@ namespace ArcOthello_AC
         }
         #endregion
 
-        public Board(int width, int height)
+        public Board(int width = 9, int height = 7)
         {
             this.GridWidth = width;
             this.GridHeight = height;
