@@ -113,6 +113,7 @@ namespace ArcOthello_AC
             TimeP1.DataContext = Player1;
             TimeP2.DataContext = Player2;
             history = new Stack<Board>();
+            BoardGrid.DataContext = this;
         }
 
         public void Init()

@@ -253,8 +253,11 @@ namespace ArcOthello_AC
         public bool PlayMove(int column, int row, bool isWhite)
         {
             bool canPlay = PosePiece(row, column, isWhite ? Team.White : Team.Black);
-            ClearPreview();
-            ShowPossibleMove(isWhite ? Team.Black : Team.White);
+            if (canPlay)
+            {
+                ClearPreview();
+                ShowPossibleMove(isWhite ? Team.Black : Team.White);
+            }
             return canPlay;
         }
 

@@ -68,12 +68,13 @@ namespace ArcOthello_AC
 
         private void NewCommand_Executed(object sender, ExecutedRoutedEventArgs e)
         {
+            filename = null;
             GameInstance.NewGame();
         }
 
         private void SaveCommand_CanExecute(object sender, CanExecuteRoutedEventArgs e)
         {
-            e.CanExecute = filename != null;
+            e.CanExecute = filename != null && GameInstance.Board != null;
         }
 
         private void SaveCommand_Executed(object sender, ExecutedRoutedEventArgs e)
