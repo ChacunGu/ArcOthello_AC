@@ -70,11 +70,11 @@
                 <ColumnDefinition Width="50"/>
                 <ColumnDefinition Width="177*"/>
             </Grid.ColumnDefinitions>
-            <Label Content="Player 1" Grid.Row="1" FontSize="24" HorizontalAlignment="Right" Width="93" />
+            <Label Content="Nvidia" Grid.Row="1" FontSize="24" HorizontalAlignment="Right" Width="93" />
             <Label x:Name="ScoreP1" Content="{Binding Score}" Grid.Row="1" Grid.Column="1" FontSize="24" HorizontalAlignment="Right"  />
             <Label Content=":" Grid.Row="1" Grid.Column="2" FontSize="24" HorizontalAlignment="Center" VerticalAlignment="Center" />
             <Label x:Name="ScoreP2" Content="{Binding Score}" Grid.Row="1" Grid.Column="3" FontSize="24" HorizontalAlignment="Left" />
-            <Label Content="Player 2" Grid.Row="1" Grid.Column="4" FontSize="24" HorizontalAlignment="Left" Width="93" />
+            <Label Content="AMD" Grid.Row="1" Grid.Column="4" FontSize="24" HorizontalAlignment="Left" Width="93" />
 
             <Label x:Name="TimeP1" Grid.Row="2" FontSize="12" HorizontalAlignment="Right" >
                 <Label.Content>

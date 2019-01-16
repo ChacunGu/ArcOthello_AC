@@ -135,6 +135,8 @@ namespace ArcOthello_AC
 
         public void OpenSave()
         {
+            GameInstance.PopupMenu.IsOpen = false;
+            GameInstance.PopupEndGame.IsOpen = false;
             Microsoft.Win32.OpenFileDialog dlg = new Microsoft.Win32.OpenFileDialog
             {
                 FileName = "Save", // Default file name
@@ -152,6 +154,8 @@ namespace ArcOthello_AC
                 filename = dlg.FileName;
                 GameInstance.Load(filename);
             }
+            else if(!GameInstance.IsGameOn)
+                GameInstance.PopupMenu.IsOpen = true;
         }
 
         #region PropertyChanged implementation

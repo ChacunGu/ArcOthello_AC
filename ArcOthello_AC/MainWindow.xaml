@@ -21,7 +21,7 @@
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
         <Menu >
-            <MenuItem Header="_File">
+            <MenuItem Header="_Menu">
                 <MenuItem Header="_New" Command="New" />
                 <MenuItem Header="_Save" Command="Save"/>
                 <MenuItem Header="Save _As" Command="SaveAs" />

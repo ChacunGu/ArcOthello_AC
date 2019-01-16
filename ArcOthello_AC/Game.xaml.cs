@@ -32,9 +32,9 @@ namespace ArcOthello_AC
         public Player Player2 { get; set; }
         
         public Board Board { get; private set; }
+        public bool IsGameOn { get; private set; }
         
         private Player CurrentPlayer;
-        private bool isGameOn = false;
         private bool playerPassed = false;
         private Stack<Board> history;
 
@@ -67,12 +67,14 @@ namespace ArcOthello_AC
         public void NewGame(object sender = null, RoutedEventArgs e = null)
         {
             PopupMenu.IsOpen = false;
+            PopupEndGame.IsOpen = false;
 
             Init();
         }
         public void PopupLoadCommand(object sender, RoutedEventArgs e)
         {
             PopupMenu.IsOpen = false;
+            PopupEndGame.IsOpen = false;
             ((MainWindow)Application.Current.MainWindow).OpenSave();
         }
 
@@ -103,42 +105,45 @@ namespace ArcOthello_AC
             Player1 = new Player(Team.Black);
             Player2 = new Player(Team.White);
             PopupMenu.IsOpen = true;
+            PopupEndGame.IsOpen = false;
         }
 
-        private void ResetDataContext()
+        private void InitContext()
         {
             PieceList.DataContext = Board;
+
             ScoreP1.DataContext = Player1;
             ScoreP2.DataContext = Player2;
+
             TimeP1.DataContext = Player1;
             TimeP2.DataContext = Player2;
+
             history = new Stack<Board>();
-            BoardGrid.DataContext = this;
+
+            RaisePropertyChanged("Player1");
+            RaisePropertyChanged("Player2");
+
+            dispatcherTimer.Tick += new EventHandler(DispatcherTimer_Tick);
+            dispatcherTimer.Interval = new TimeSpan(0, 0, 0, 0, 20);
+            dispatcherTimer.Start();
+            stopWatch.Start();
         }
 
         public void Init()
         {
-            history = new Stack<Board>();
-
             Player1 = new Player(Team.Black);
             Player2 = new Player(Team.White);
             CurrentPlayer = Player1;
 
             Board = new Board(Constants.GRID_WIDTH, Constants.GRID_HEIGHT);
 
-            ResetDataContext();
+            InitContext();
 
-            dispatcherTimer.Tick += new EventHandler(DispatcherTimer_Tick);
-            dispatcherTimer.Interval = new TimeSpan(0, 0, 0, 0, 20);
-
-            isGameOn = true;
+            IsGameOn = true;
             playerPassed = false;
 
             ShowPossibleMove();
             RecalculateScore();
-
-            dispatcherTimer.Start();
-            stopWatch.Start();
         }
         
 
@@ -150,6 +155,8 @@ namespace ArcOthello_AC
 
         public void Load(string path)
         {
+            PopupMenu.IsOpen = false;
+            PopupEndGame.IsOpen = false;
             DeserializeFromXML(path);
         }
 
@@ -162,6 +169,7 @@ namespace ArcOthello_AC
                 formatter.Serialize(stream, Player2);
                 formatter.Serialize(stream, CurrentPlayer.Team == Team.Black ? true : false);
                 formatter.Serialize(stream, Board);
+                formatter.Serialize(stream, playerPassed);
             }
         }
 
@@ -176,13 +184,16 @@ namespace ArcOthello_AC
                     Player tmpP2 = (Player)formatter.Deserialize(stream);
                     Player tmpCurrentPlayer = CurrentPlayer = (bool)formatter.Deserialize(stream) == true ? Player1 : Player2;
                     Board tmpBoard = (Board)formatter.Deserialize(stream);
+                    bool tmpPlayerPassed = (bool)formatter.Deserialize(stream);
 
                     Player1 = tmpP1;
                     Player2 = tmpP2;
                     CurrentPlayer = tmpCurrentPlayer;
                     Board = tmpBoard;
+                    playerPassed = tmpPlayerPassed;
 
-                    ResetDataContext();
+                    IsGameOn = true;
+                    InitContext();
                 }
                 catch(SerializationException e)
                 {
@@ -191,9 +202,6 @@ namespace ArcOthello_AC
                                           MessageBoxButton.OK,
                                           MessageBoxImage.Error);
                 }
-
-                
-                ResetDataContext();
             }
         }
         #endregion
@@ -202,7 +210,7 @@ namespace ArcOthello_AC
         #region Undo
         public void Undo()
         {
-            if (isGameOn)
+            if (IsGameOn)
             {
                 Board backupBoard = history.Pop();
                 for (int y = 0; y < Board.GridHeight; y++)
@@ -223,7 +231,7 @@ namespace ArcOthello_AC
         #region Game Logic
         private void Board_Click(object sender, MouseButtonEventArgs e)
         {
-            if (isGameOn)
+            if (IsGameOn)
             {
                 ItemsControl i = sender as ItemsControl;
                 Point p = e.GetPosition(i);
@@ -275,9 +283,11 @@ namespace ArcOthello_AC
 
         private void EndGame()
         {
-            isGameOn = false;
+            IsGameOn = false;
+            Board = null;
+            history = new Stack<Board>();
             PopupEndGame.IsOpen = true;
-            PopupEndGame_WinnerName.Text = (Player1.Score > Player2.Score ?  "NVIDIA wins the game" : 
+            PopupEndGame_WinnerName.Text = (Player1.Score > Player2.Score ? "Nvidia wins the game" : 
                                             Player1.Score == Player2.Score ? "Draw !" :
                                                                              "AMD wins the game");
         }
