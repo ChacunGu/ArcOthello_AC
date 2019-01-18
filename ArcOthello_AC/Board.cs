@@ -1,10 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.ComponentModel;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ArcOthello_AC
 {
@@ -94,6 +91,7 @@ namespace ArcOthello_AC
         }
         #endregion
 
+        #region Board control
         /// <summary>
         /// Poses the piece at given position.
         /// Throws exception if the position is invalid.
@@ -146,26 +144,7 @@ namespace ArcOthello_AC
                 }
             }
         }
-
-        /// <summary>
-        /// Returns the number of valid moves for the given team.
-        /// </summary>
-        /// <param name="team">team whose turn it is</param>
-        /// <returns></returns>
-        public int NumberPossibleMove(Team team)
-        {
-            int count = 0;
-            Team preview = team == Team.Black ? Team.BlackPreview : Team.WhitePreview;
-            for (int y = 0; y < GridHeight; y++)
-            {
-                for (int x = 0; x < GridWidth; x++)
-                {
-                    count += GetFlipPieceList(y, x, team).Count() != 0 && pieces[x][y].Team == Team.None ? 1 : 0;
-                }
-            }
-            return count;
-        }
-
+        
         /// <summary>
         /// Returns a list of pieces to flip for a piece of a given team posed at a given position.
         /// </summary>
@@ -215,6 +194,27 @@ namespace ArcOthello_AC
                 return flipPiece;
             return new List<Piece>();
         }
+        #endregion
+
+        #region Board status
+        /// <summary>
+        /// Returns the number of valid moves for the given team.
+        /// </summary>
+        /// <param name="team">team whose turn it is</param>
+        /// <returns></returns>
+        public int NumberPossibleMove(Team team)
+        {
+            int count = 0;
+            Team preview = team == Team.Black ? Team.BlackPreview : Team.WhitePreview;
+            for (int y = 0; y < GridHeight; y++)
+            {
+                for (int x = 0; x < GridWidth; x++)
+                {
+                    count += GetFlipPieceList(y, x, team).Count() != 0 && pieces[x][y].Team == Team.None ? 1 : 0;
+                }
+            }
+            return count;
+        }
 
         /// <summary>
         /// Returns true if the slot at given position is empty.
@@ -244,6 +244,7 @@ namespace ArcOthello_AC
                    row >= 0 && row < GridHeight && 
                    pieces[col][row].Team == (team == Team.White ? Team.WhitePreview : Team.BlackPreview);
         }
+        #endregion
 
         #region Preview controls
         /// <summary>

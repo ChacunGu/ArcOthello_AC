@@ -1,18 +1,15 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
 
 namespace ArcOthello_AC
 {
+    /// <summary>
+    /// Class representing a board's piece.
+    /// </summary>
     [Serializable]
     public class Piece : INotifyPropertyChanged
     {
-
+        #region Properties
         public int X { get; private set; }
         public int Y { get; private set; }
 
@@ -26,8 +23,9 @@ namespace ArcOthello_AC
                 RaisePropertyChanged("team");
             }
         }
+        #endregion
 
-
+        #region Constructor
         public Piece(Team team, int x, int y)
         {
             Team = team;
@@ -41,6 +39,7 @@ namespace ArcOthello_AC
             this.X = p.X;
             this.Y = p.Y;
         }
+        #endregion
 
         public void Flip()
         {
