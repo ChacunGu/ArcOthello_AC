@@ -51,6 +51,9 @@ namespace ArcOthello_AC
             Init(b.pieces);
         }
 
+        /// <summary>
+        /// Initializes a board's ObservableCollections (content) and default pieces.
+        /// </summary>
         public void Init()
         {
             pieces = new ObservableCollection<ObservableCollection<Piece>>();
@@ -70,6 +73,10 @@ namespace ArcOthello_AC
             pieces[4][3].SetTeam(Team.White);
         }
 
+        /// <summary>
+        /// Initializes a board's ObservableCollections (content) by copying given ObservableCollections.
+        /// </summary>
+        /// <param name="piecesToCopy">ObservableCollections to copy</param>
         public void Init(ObservableCollection<ObservableCollection<Piece>> piecesToCopy)
         {
             pieces = new ObservableCollection<ObservableCollection<Piece>>();
@@ -85,6 +92,13 @@ namespace ArcOthello_AC
             }
         }
 
+        /// <summary>
+        /// Poses the piece at given position.
+        /// Throws exception if the position is invalid.
+        /// </summary>
+        /// <param name="row">y position on the board for the new piece</param>
+        /// <param name="col">x position on the board for the new piece</param>
+        /// <param name="p">piece to pose</param>
         public void SetPiece(int row, int col, Piece p)
         {
             if (row < 0 || row >= GridHeight)
@@ -94,25 +108,39 @@ namespace ArcOthello_AC
             pieces[col][row] = p;
         }
 
+        /// <summary>
+        /// Tries to play at given position and returns if the move is valid.
+        /// </summary>
+        /// <param name="row">y position on the board for the new piece</param>
+        /// <param name="col">x position on the board for the new piece</param>
+        /// <param name="team">team whose turn it is</param>
+        /// <returns>True if the move is valid false otherwise</returns>
         public bool PosePiece(int row, int col, Team team)
         {
             if (IsPositionValid(row, col))
             {
                 pieces[col][row].SetTeam(team);
-
                 GetFlipPieceList(row, col, team).ForEach(p => p.Flip());
-
                 return true;
             }
-
             return false;
         }
 
+        /// <summary>
+        /// Tests if the move is valid.
+        /// </summary>
+        /// <param name="row">y position to test on the board</param>
+        /// <param name="col">x position to test on the board</param>
+        /// <returns>true if the move is valid false otherwise</returns>
         private bool IsPositionValid(int row, int col)
         {
             return pieces[col][row].Team == Team.BlackPreview || pieces[col][row].Team == Team.WhitePreview;
         }
 
+        /// <summary>
+        /// Displays given team's preview pieces on the board at valid positions.
+        /// </summary>
+        /// <param name="team">team whose turn it is</param>
         public void ShowPossibleMove(Team team)
         {
             Team preview = team == Team.Black ? Team.BlackPreview : Team.WhitePreview;
@@ -126,6 +154,11 @@ namespace ArcOthello_AC
             }
         }
 
+        /// <summary>
+        /// Returns the number of valid moves for the given team.
+        /// </summary>
+        /// <param name="team">team whose turn it is</param>
+        /// <returns></returns>
         public int NumberPossibleMove(Team team)
         {
             int count = 0;
@@ -140,6 +173,13 @@ namespace ArcOthello_AC
             return count;
         }
 
+        /// <summary>
+        /// Returns a list of pieces to flip.
+        /// </summary>
+        /// <param name="row">y position on the board</param>
+        /// <param name="col">x position on the board for the new piece</param>
+        /// <param name="team">team whose turn it is</param>
+        /// <returns>list of pieces to flip</returns>
         private List<Piece> GetFlipPieceList(int row, int col, Team team)
         {
             return GetFlipPieceList(row, col, team, 1, 0)
