@@ -9,6 +9,9 @@ using System.Windows.Media;
 
 namespace ArcOthello_AC
 {
+    /// <summary>
+    /// Convert the two values representing the players score to a color
+    /// </summary>
     public class BackgroundColorConverter : IMultiValueConverter
     {
         public Color Player1Color { get; set; }
@@ -16,12 +19,16 @@ namespace ArcOthello_AC
 
         public object Convert(object[] values, Type targetType, object parameter, System.Globalization.CultureInfo culture)
         {
+            // Get the two values and calculate the ratio
             double scoreP1 = System.Convert.ToDouble(values[0]);
             double scoreP2 = System.Convert.ToDouble(values[1]);
             double ratio = scoreP1 / (scoreP1 + scoreP2);
+
+            // In the case of the first calls (when the ratio is NaN), set the background as white
             if (double.IsNaN(ratio))
                 return new SolidColorBrush(Colors.White);
 
+            // Otherwise, blend and return the resulting color
             return new SolidColorBrush(Blend(Player1Color, Player2Color, ratio));
         }
 
