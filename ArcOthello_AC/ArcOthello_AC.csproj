@@ -140,11 +140,6 @@
     <Resource Include="Images\nvidia-rtx.png" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Images\wood.jpg">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Resource>
-  </ItemGroup>
-  <ItemGroup>
     <Resource Include="Images\pcb.png" />
   </ItemGroup>
   <ItemGroup>
