@@ -9,6 +9,9 @@ using System.Windows.Media.Imaging;
 
 namespace ArcOthello_AC
 {
+    /// <summary>
+    /// Converter used to convert the team value (an enum) to an image
+    /// </summary>
     public class TeamToImageConverter : IValueConverter
     {
         public BitmapImage WhiteImage { get; set; }
@@ -18,12 +21,15 @@ namespace ArcOthello_AC
 
         public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
         {
+            // If the converter is used incorrectly, and the value is not a Team
             if (!(value is Team))
             {
                 return null;
             }
 
             Team t = (Team) value;
+            // Return the image accordingly
+            // The tag is used to know if the image is a valid piece and not a preview
             switch(t)
             {
                 case Team.Black:

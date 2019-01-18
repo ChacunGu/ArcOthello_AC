@@ -33,18 +33,18 @@ namespace ArcOthello_AC
         public Player Player2 { get; set; }
         public Board Board { get; private set; }
         public bool IsGameOn { get; private set; }
-        
-        private Player CurrentPlayer;
-        private bool playerPassed = false;
-        private Stack<Board> history;
-        #endregion
 
-
-        #region Indexer
         public Stack<Board> History
         {
             get { return history; }
         }
+
+        #endregion
+
+        #region Variables
+        private Player CurrentPlayer;
+        private bool playerPassed = false;
+        private Stack<Board> history;
         #endregion
 
 
@@ -60,13 +60,22 @@ namespace ArcOthello_AC
         }
         #endregion
 
-
         #region GUI events
+        /// <summary>
+        /// Shutdown the application when called
+        /// </summary>
+        /// <param name="sender">The event sender</param>
+        /// <param name="e">The event param</param>
         public void Exit(object sender, RoutedEventArgs e)
         {
             Application.Current.Shutdown();
         }
 
+        /// <summary>
+        /// Create a new game
+        /// </summary>
+        /// <param name="sender">The event sender</param>
+        /// <param name="e">The event param</param>
         public void NewGame(object sender = null, RoutedEventArgs e = null)
         {
             PopupMenu.IsOpen = false;
@@ -74,6 +83,12 @@ namespace ArcOthello_AC
 
             Init();
         }
+
+        /// <summary>
+        /// Load a game from the popup window
+        /// </summary>
+        /// <param name="sender">The event sender</param>
+        /// <param name="e">The event param</param>
         public void PopupLoadCommand(object sender, RoutedEventArgs e)
         {
             PopupMenu.IsOpen = false;
@@ -81,18 +96,33 @@ namespace ArcOthello_AC
             ((MainWindow)Application.Current.MainWindow).OpenSave();
         }
 
+        /// <summary>
+        /// When the game has ended and we have decided to go back to the menu, close the end game popup and open the menu popup
+        /// </summary>
+        /// <param name="sender">The event sender</param>
+        /// <param name="e">The event param</param>
         private void GoBackToMenu(object sender, RoutedEventArgs e)
         {
             PopupEndGame.IsOpen = false;
             PopupMenu.IsOpen = true;
         }
 
+        /// <summary>
+        /// When the popup is loaded, set its position
+        /// </summary>
+        /// <param name="sender">The event sender</param>
+        /// <param name="e">The event param</param>
         private void PopupMenu_Loaded(object sender, RoutedEventArgs e)
         {
             PopupMenu.HorizontalOffset = (ActualWidth - PopupMenu_content.Width) / 2;
             PopupMenu.VerticalOffset = ActualHeight / 2;
         }
 
+        /// <summary>
+        /// When the end game popup is loaded, set its position
+        /// </summary>
+        /// <param name="sender">The event sender</param>
+        /// <param name="e">The event param</param>
         private void PopupEndGame_Loaded(object sender, RoutedEventArgs e)
         {
             PopupEndGame.HorizontalOffset = (ActualWidth - PopupEndGame_content.Width) / 2;
@@ -100,7 +130,7 @@ namespace ArcOthello_AC
         }
         #endregion
 
-
+        #region Constructor
         public Game()
         {
             InitializeComponent();
@@ -110,7 +140,12 @@ namespace ArcOthello_AC
             PopupMenu.IsOpen = true;
             PopupEndGame.IsOpen = false;
         }
+        #endregion
 
+        #region HelperMethods
+        /// <summary>
+        /// Init the data contexts and some game variables
+        /// </summary>
         private void InitContext()
         {
             PieceList.DataContext = Board;
@@ -132,7 +167,10 @@ namespace ArcOthello_AC
             stopWatch.Start();
         }
 
-        public void Init()
+        /// <summary>
+        /// Initialise the players and the game board
+        /// </summary>
+        private void Init()
         {
             Player1 = new Player(Team.Black);
             Player2 = new Player(Team.White);
@@ -148,14 +186,22 @@ namespace ArcOthello_AC
             ShowPossibleMove();
             RecalculateScore();
         }
-        
+        #endregion
 
         #region Game Saver
+        /// <summary>
+        /// Save the game at the specified path
+        /// </summary>
+        /// <param name="path">The path to save the game</param>
         public void Save(string path)
         {
             SerializeToXML(path);
         }
 
+        /// <summary>
+        /// Load the specified game file
+        /// </summary>
+        /// <param name="path">The path of the game to load</param>
         public void Load(string path)
         {
             PopupMenu.IsOpen = false;
@@ -163,6 +209,10 @@ namespace ArcOthello_AC
             DeserializeFromXML(path);
         }
 
+        /// <summary>
+        /// Serialise the game to a file at the specified path
+        /// </summary>
+        /// <param name="path">The path of the file</param>
         private void SerializeToXML(string path)
         {
             IFormatter formatter = new BinaryFormatter();
@@ -176,6 +226,10 @@ namespace ArcOthello_AC
             }
         }
 
+        /// <summary>
+        /// Deserialize the file and load the game
+        /// </summary>
+        /// <param name="path">The path of the save file</param>
         private void DeserializeFromXML(string path)
         {
             IFormatter formatter = new BinaryFormatter();
@@ -183,12 +237,14 @@ namespace ArcOthello_AC
             {
                 try
                 {
+                    // The temporary variable are here to avoid setting game variables to some value that might be incorrect if the file is corrupted
                     Player tmpP1 = (Player)formatter.Deserialize(stream);
                     Player tmpP2 = (Player)formatter.Deserialize(stream);
                     Player tmpCurrentPlayer = CurrentPlayer = (bool)formatter.Deserialize(stream) == true ? Player1 : Player2;
                     Board tmpBoard = (Board)formatter.Deserialize(stream);
                     bool tmpPlayerPassed = (bool)formatter.Deserialize(stream);
 
+                    // From here, we can say that the file is correct
                     Player1 = tmpP1;
                     Player2 = tmpP2;
                     CurrentPlayer = tmpCurrentPlayer;
@@ -209,8 +265,10 @@ namespace ArcOthello_AC
         }
         #endregion
 
-
         #region Undo
+        /// <summary>
+        /// Undo the previous move
+        /// </summary>
         public void Undo()
         {
             if (IsGameOn)
@@ -232,18 +290,24 @@ namespace ArcOthello_AC
         }
         #endregion
 
-
         #region Game Logic
+        /// <summary>
+        /// When there is a click on the board, pose a piece if the position is correct
+        /// </summary>
+        /// <param name="sender">The event sender</param>
+        /// <param name="e">The event param</param>
         private void Board_Click(object sender, MouseButtonEventArgs e)
         {
             if (IsGameOn)
             {
+                // Get the position on the board
                 ItemsControl i = sender as ItemsControl;
                 Point p = e.GetPosition(i);
                 int x = (int)(p.X / i.ActualWidth * Board.GridWidth);
                 int y = (int)(p.Y / i.ActualHeight * Board.GridHeight);
                 bool isWhite = CurrentPlayer.Team == Team.White;
-
+                
+                // Check if the move is correct and pose the piece
                 if (Board.IsPlayable(x, y, isWhite))
                     history.Push(new Board(Board));
                 if (Board.PlayMove(x, y, isWhite))
@@ -251,11 +315,17 @@ namespace ArcOthello_AC
             }
         }
 
+        /// <summary>
+        /// Used to switch from player 1 to player 2 and vice versa
+        /// </summary>
         private void NextPlayer()
         {
             CurrentPlayer = CurrentPlayer == Player1 ? Player2 : Player1;
         }
 
+        /// <summary>
+        /// When a turn has ended, clear the preview and switch players 
+        /// </summary>
         private void EndTurn()
         {
             Board.ClearPreview();
@@ -279,11 +349,18 @@ namespace ArcOthello_AC
             }
         }
 
+        /// <summary>
+        /// Check whether the current player can play
+        /// </summary>
+        /// <returns>True if the player can play, false otherwise </returns>
         private bool CanCurrentPlayerPlay()
         {
             return Board.NumberPossibleMove(CurrentPlayer.Team) > 0;
         }
 
+        /// <summary>
+        /// Called when the game has ended and show the winner
+        /// </summary>
         private void EndGame()
         {
             IsGameOn = false;
@@ -295,6 +372,9 @@ namespace ArcOthello_AC
                                                                              "AMD wins the game");
         }
                 
+        /// <summary>
+        /// Calculate the new score and update the display
+        /// </summary>
         private void RecalculateScore()
         {
             Player1.Score = 0;
@@ -313,6 +393,9 @@ namespace ArcOthello_AC
             RaisePropertyChanged("Player2");
         }
 
+        /// <summary>
+        /// Set the preview on the possible moves
+        /// </summary>
         private void ShowPossibleMove()
         {
             Board.ShowPossibleMove(CurrentPlayer.Team);
