@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 namespace ArcOthello_AC
 {
     [Serializable]
-    public class Board : INotifyPropertyChanged, IPlayable.IPlayable
+    public class Board : IPlayable.IPlayable
     {
         #region Properties
         public int GridWidth { get; private set; }
@@ -37,6 +37,7 @@ namespace ArcOthello_AC
         }
         #endregion
 
+        #region Constructors and Initializers
         public Board(int width, int height)
         {
             this.GridWidth = width;
@@ -50,7 +51,7 @@ namespace ArcOthello_AC
             this.GridHeight = b.GridHeight;
             Init(b.pieces);
         }
-
+        
         /// <summary>
         /// Initializes a board's ObservableCollections (content) and default pieces.
         /// </summary>
@@ -91,6 +92,7 @@ namespace ArcOthello_AC
                 pieces.Add(col);
             }
         }
+        #endregion
 
         /// <summary>
         /// Poses the piece at given position.
@@ -117,24 +119,15 @@ namespace ArcOthello_AC
         /// <returns>True if the move is valid false otherwise</returns>
         public bool PosePiece(int row, int col, Team team)
         {
-            if (IsPositionValid(row, col))
+            if (pieces[col][row].Team == (team == Team.White ? 
+                                          Team.WhitePreview : 
+                                          Team.BlackPreview))
             {
                 pieces[col][row].SetTeam(team);
                 GetFlipPieceList(row, col, team).ForEach(p => p.Flip());
                 return true;
             }
             return false;
-        }
-
-        /// <summary>
-        /// Tests if the move is valid.
-        /// </summary>
-        /// <param name="row">y position to test on the board</param>
-        /// <param name="col">x position to test on the board</param>
-        /// <returns>true if the move is valid false otherwise</returns>
-        private bool IsPositionValid(int row, int col)
-        {
-            return pieces[col][row].Team == Team.BlackPreview || pieces[col][row].Team == Team.WhitePreview;
         }
 
         /// <summary>
@@ -174,11 +167,11 @@ namespace ArcOthello_AC
         }
 
         /// <summary>
-        /// Returns a list of pieces to flip.
+        /// Returns a list of pieces to flip for a piece of a given team posed at a given position.
         /// </summary>
         /// <param name="row">y position on the board</param>
-        /// <param name="col">x position on the board for the new piece</param>
-        /// <param name="team">team whose turn it is</param>
+        /// <param name="col">x position on the board</param>
+        /// <param name="team">piece's team</param>
         /// <returns>list of pieces to flip</returns>
         private List<Piece> GetFlipPieceList(int row, int col, Team team)
         {
@@ -192,6 +185,16 @@ namespace ArcOthello_AC
                 .Concat(GetFlipPieceList(row, col, team, 0, -1)).ToList();
         }
 
+        /// <summary>
+        /// Returns a list of pieces to flip for a piece of a given team posed at a given position.
+        /// Checks only a given direction defined by incX / incY.
+        /// </summary>
+        /// <param name="row">y position on the board</param>
+        /// <param name="col">x position on the board</param>
+        /// <param name="team">piece's team</param>
+        /// <param name="incX">x propagation direction</param>
+        /// <param name="incY">y propagation direction</param>
+        /// <returns>list of pieces to flip in the given direction</returns>
         private List<Piece> GetFlipPieceList(int row, int col, Team team, int incX, int incY)
         {
             List<Piece> flipPiece = new List<Piece>();
@@ -201,30 +204,40 @@ namespace ArcOthello_AC
             row += incY;
             col += incX;
 
-            while (IsValid(row, col) && pieces[col][row].Team == enemyTeam)
+            while (!IsSlotEmpty(row, col) && pieces[col][row].Team == enemyTeam)
             {
                 flipPiece.Add(pieces[col][row]);
                 row += incY;
                 col += incX;
             }
 
-            if (IsValid(row, col) && pieces[col][row].Team == team)
+            if (!IsSlotEmpty(row, col) && pieces[col][row].Team == team)
                 return flipPiece;
             return new List<Piece>();
         }
 
-        public bool IsValid(int row, int col)
+        /// <summary>
+        /// Returns true if the slot at given position is empty.
+        /// </summary>
+        /// <param name="row">y position on the board</param>
+        /// <param name="col">x position on the board</param>
+        /// <returns>true if the slot is empty false otherwise</returns>
+        public bool IsSlotEmpty(int row, int col)
         {
-            if (col < 0 || col >= GridWidth)
-                return false;
-            if (row < 0 || row >= GridHeight)
-                return false;
-            if (pieces[col][row].Team == Team.None || pieces[col][row].Team == Team.BlackPreview || pieces[col][row].Team == Team.WhitePreview)
-                return false;
-
-            return true;
+            return (col < 0 || col >= GridWidth ||
+                    row < 0 || row >= GridHeight ||
+                    pieces[col][row].Team == Team.None ||
+                    pieces[col][row].Team == Team.BlackPreview ||
+                    pieces[col][row].Team == Team.WhitePreview);
         }
 
+        /// <summary>
+        /// Returns true if a piece of the given team can be posed at given position.
+        /// </summary>
+        /// <param name="row">y position on the board</param>
+        /// <param name="col">x position on the board</param>
+        /// <param name="team">piece's team</param>
+        /// <returns>true if the move is valid false otherwise</returns>
         public bool IsValid(int row, int col, Team team)
         {
             return col >= 0 && col < GridWidth && 
@@ -232,6 +245,10 @@ namespace ArcOthello_AC
                    pieces[col][row].Team == (team == Team.White ? Team.WhitePreview : Team.BlackPreview);
         }
 
+        #region Preview controls
+        /// <summary>
+        /// Removes preview pieces from the board.
+        /// </summary>
         public void ClearPreview()
         {
             foreach (ObservableCollection<Piece> row in Pieces)
@@ -244,19 +261,14 @@ namespace ArcOthello_AC
             }
         }
 
+        /// <summary>
+        /// Returns true if the given piece is type of preview.
+        /// </summary>
+        /// <param name="p">piece to test</param>
+        /// <returns>true if the given piece's type is preview false otherwise</returns>
         private bool IsPreview(Piece p)
         {
             return p.Team == Team.BlackPreview || p.Team == Team.WhitePreview;
-        }
-
-        #region PropertyChanged implementation
-        [field: NonSerializedAttribute()]
-        public event PropertyChangedEventHandler PropertyChanged;
-
-        void RaisePropertyChanged(string propertyName)
-        {
-            if (PropertyChanged != null)
-                PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
         }
         #endregion
 
