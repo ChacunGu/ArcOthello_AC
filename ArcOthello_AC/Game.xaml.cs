@@ -31,7 +31,6 @@ namespace ArcOthello_AC
         #region Properties
         public Player Player1 { get; set; }
         public Player Player2 { get; set; }
-        
         public Board Board { get; private set; }
         public bool IsGameOn { get; private set; }
 
@@ -47,6 +46,7 @@ namespace ArcOthello_AC
         private bool playerPassed = false;
         private Stack<Board> history;
         #endregion
+
 
         #region Timer
         Stopwatch stopWatch = new Stopwatch();
@@ -274,6 +274,8 @@ namespace ArcOthello_AC
             if (IsGameOn)
             {
                 Board backupBoard = history.Pop();
+
+                // set the board's content
                 for (int y = 0; y < Board.GridHeight; y++)
                 {
                     for (int x = 0; x < Board.GridWidth; x++)
@@ -282,8 +284,8 @@ namespace ArcOthello_AC
                     }
                 }
                 
-                RecalculateScore();
-                NextPlayer();
+                RecalculateScore(); // update score
+                NextPlayer(); // change player
             }
         }
         #endregion
@@ -303,16 +305,13 @@ namespace ArcOthello_AC
                 Point p = e.GetPosition(i);
                 int x = (int)(p.X / i.ActualWidth * Board.GridWidth);
                 int y = (int)(p.Y / i.ActualHeight * Board.GridHeight);
-
                 bool isWhite = CurrentPlayer.Team == Team.White;
-
+                
                 // Check if the move is correct and pose the piece
                 if (Board.IsPlayable(x, y, isWhite))
                     history.Push(new Board(Board));
                 if (Board.PlayMove(x, y, isWhite))
-                {
                     EndTurn();
-                }
             }
         }
 
