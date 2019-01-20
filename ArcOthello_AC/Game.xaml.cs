@@ -271,11 +271,14 @@ namespace ArcOthello_AC
                     for (int x = 0; x < Board.GridWidth; x++)
                     {
                         Board.SetPiece(y, x, backupBoard[y, x]);
+                        if (backupBoard[y, x].Team == Team.BlackPreview)
+                            CurrentPlayer = Player1;
+                        else if (backupBoard[y, x].Team == Team.WhitePreview)
+                            CurrentPlayer = Player2;
                     }
                 }
                 
                 RecalculateScore(); // update score
-                NextPlayer(); // change player
             }
         }
         #endregion
