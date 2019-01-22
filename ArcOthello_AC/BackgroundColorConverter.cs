@@ -1,27 +1,40 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Globalization;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Data;
 using System.Windows.Media;
 
 namespace ArcOthello_AC
 {
+    /// <summary>
+    /// Convert the two values representing the players score to a color
+    /// </summary>
     public class BackgroundColorConverter : IMultiValueConverter
     {
+        #region Properties
         public Color Player1Color { get; set; }
         public Color Player2Color { get; set; }
+        #endregion
 
+        /// <summary>
+        /// Returns a SolidColorBrush with the right color. Maps the color according to the player's default colors and scores.
+        /// </summary>
+        /// <param name="values"></param>
+        /// <param name="targetType"></param>
+        /// <param name="parameter"></param>
+        /// <param name="culture"></param>
+        /// <returns>SolidColorBrush with blended color</returns>
         public object Convert(object[] values, Type targetType, object parameter, System.Globalization.CultureInfo culture)
         {
+            // Get the two values and calculate the ratio
             double scoreP1 = System.Convert.ToDouble(values[0]);
             double scoreP2 = System.Convert.ToDouble(values[1]);
             double ratio = scoreP1 / (scoreP1 + scoreP2);
+
+            // In the case of the first calls (when the ratio is NaN), set the background as white
             if (double.IsNaN(ratio))
                 return new SolidColorBrush(Colors.White);
 
+            // Otherwise, blend and return the resulting color
             return new SolidColorBrush(Blend(Player1Color, Player2Color, ratio));
         }
 
@@ -42,6 +55,14 @@ namespace ArcOthello_AC
             return Color.FromRgb(r, g, b);
         }
 
+        /// <summary>
+        /// Method from Converter.
+        /// </summary>
+        /// <param name="value"></param>
+        /// <param name="targetTypes"></param>
+        /// <param name="parameter"></param>
+        /// <param name="culture"></param>
+        /// <returns></returns>
         public object[] ConvertBack(object value, Type[] targetTypes, object parameter, CultureInfo culture)
         {
             throw new NotImplementedException();

@@ -1,17 +1,15 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
 
 namespace ArcOthello_AC
 {
+    /// <summary>
+    /// Class representing a player with his team, his score and the time he has spent playing
+    /// </summary>
     [Serializable]
     public class Player : INotifyPropertyChanged
     {
+        #region Properties
         private int score;
 
         public int Score
@@ -35,24 +33,16 @@ namespace ArcOthello_AC
                 RaisePropertyChanged("Time");
             }
         }
-        
+        #endregion
 
+        #region Constructor
         public Player(Team team)
         {
             this.Team = team;
             this.Score = 0;
             this.Time = new TimeSpan();
         }
-
-        //public void UpdateScore(int newScore)
-        //{
-        //    score = newScore;
-        //}
-
-        public Point Play(Board board)
-        {
-            return new Point(0, 0);
-        }
+        #endregion
 
         #region PropertyChanged implementation
         [field: NonSerializedAttribute()]
